@@ -1,37 +1,24 @@
-﻿// Lets actually start modeling stuff
-
 namespace Library.Domain;
 
-public class Book
+public class Book : LibraryItem, ILendable
 {
-    // Things about a boo we can model - what is the "shape" of a 
-    // Because I want to use no-arg Constructto, its best practice to make
-    // my properties nullable
-    public string? Title { get; private set; } // auto property syntax - no writing getters and setters
-    public string? Author { get; private set; }
-    public int? CopiesAvailable { get; private set; }
+    // What is unique to a book (for our demo?)
+    public int CopiesAvailable { get; private set; }
 
-    // The same way we can have static methods (belog to the class)
-    // we can have static properties/members
-    private static int _nextId = 1; // By convention, static properties have an underscore
-
-    public int Id { get;} // No setter, I don't want someone to reassign this
-
-    // Every calss has a very specific method within it
-    // The constructor - you can have as many as you need/want
-    // Lets make a full argument constructor
-    public Book(string title, string author, int copiesAvailable)
+    // Child class constructors look a little different
+    // We take in all our arguments for the parent + child, then call base with a colon
+    public Book(string title, string author, int copiesAvailable) : base (title, author)
     {
-        Id = _nextId++; // Get the value of _nextId, assign it, increment it
-        Title = title;
-        Author = author;
         CopiesAvailable = copiesAvailable;
     }
 
-    public Book(){}
+    // Because we have an abstract method in the parent, we MUST override it or we can't compile
+    public override string Describe()
+    {
+        return $"{Id}: Title: {Title} by {Author} has {CopiesAvailable} copies available for checkout";
+    }
 
-    // Our first instance method - no "static" keyword, just
-    // an access modifier + return type + any arguments if any
+    // Methods bellow pasted from OldBook.cs
     public bool Checkout()
     {
         // Attemp to ckeckout a book - if copies is already 0, return false
@@ -48,16 +35,4 @@ public class Book
 
     // Providing for return behavoir
     public void Return() => CopiesAvailable++;
-
-    // Overriding a toString
-    public override string ToString()
-    {
-        // Commented out below is a call to base.ToString()
-        // We can use the base keyword to refer to the parent class of the class we are working in
-        // Book's parent is object, so this is calling the default ToString()
-        // return base.ToString();
-
-        return $"Title: {Title} by {Author}: {CopiesAvailable} available for checkout";
-    }
-
 }

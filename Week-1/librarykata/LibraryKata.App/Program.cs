@@ -1,4 +1,7 @@
-﻿namespace LibraryKata.App; // A namespace is like a bucket or logical container for different
+﻿// If i have code from another namespace I wanto to use here - I use a using statement
+using System.Runtime.CompilerServices;
+using Library.Domain;
+namespace LibraryKata.App; // A namespace is like a bucket or logical container for different
 // related code files.
 public class Program
 {
@@ -16,6 +19,10 @@ public class Program
         // main method. I wrote my code, inside DataTypesAndOperators() - a separate method. So if I want 
         // that code to run, I need to call it inside Main()
         Program.DataTypesAndOperators();
+        Console.WriteLine("\n\n");
+        Program.ClassesExample();
+        Console.WriteLine("\n\n");
+        Program.OopDemo();
     }
 
     // private - accessible only within this class
@@ -153,6 +160,66 @@ public class Program
         {
             Console.WriteLine(book);
         }
+    }
+
+
+    private static void ClassesExample()
+    {
+        Console.WriteLine("Using our domain Book class");
+
+        // Instantiating my first book, calling the constructor via "new" keyword
+        Book dune = new Book("Dune", "Frank Herbert", 3);
+        Book littlePrince = new Book("The Little Prince", "Antoine de Saint-Exupéry", 0);
+
+
+        // If I want to print book info, I can just pass the book variable
+        // It calls the toString() for me. The next two lines do the same thing
+        Console.WriteLine(dune);
+        Console.WriteLine(littlePrince.ToString());
+
+        Console.WriteLine($"Checking out Dune: {dune.Checkout()}"); // True
+        Console.WriteLine($"Checking out The Little Prince: {littlePrince.Checkout()}"); // False
+    }
+
+
+    public static void OopDemo()
+    {
+        Console.WriteLine("\n\n == OOP Demo stuff ==");
+
+        // Leverageing polymorphism - Books, ReferenceBooks, Magazines, all are LibraryItems
+        LibraryItem[] catalog =
+        {
+            new Book("Dune", "Frank Herbert", 2),
+            new ReferenceBook("C# Language Standarts", "Microdoft", "Technology"),
+            new Magazine("Sports Illustrated", "Francisco Something", 5, "Conde Naste")
+        };
+
+        foreach(LibraryItem item in catalog)
+        {
+            Console.WriteLine(item.Describe());
+        }
+
+        // We can enven use interfaces as reference types
+        foreach(LibraryItem item in catalog)
+        {
+            if(item is ILendable lendable)
+            {
+                Console.WriteLine($"{item.Title}: checkout -> {lendable.Checkout()}");
+            }
+            else
+            {
+                Console.WriteLine($"{item.Title} is Reference Only.");
+            }
+
+        }
+
+        // Override vs new behavior
+        Magazine wired = new Magazine("Wired", "Luis", 3, "Conde Nast");
+        LibraryItem baseMag = wired;
+
+        Console.WriteLine("\n\n== Override vs New on the same object, different ref type");
+        Console.WriteLine($"Magazine reference -> {wired.ShelfLabel()}");
+        Console.WriteLine($"LibraryItem reference -> {baseMag.ShelfLabel()}");
     }
 
 }
