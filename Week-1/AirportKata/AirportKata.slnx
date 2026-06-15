@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="AirportKata.App/AirportKata.App.csproj" />
+  <Project Path="AirportKata.Domain/AirportKata.Domain.csproj" />
+</Solution>
