@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using Airport.Domain;
+//using Airport.Domain;
 
 namespace Airport.App;
 
@@ -9,7 +9,7 @@ public class Program
     public static void Main()
     {
         bool isRunning = true;
-        string option;
+        string? option;
 
         while (isRunning)
         {
@@ -33,7 +33,10 @@ public class Program
                 case "3":
 
                     break;
-                case "4":
+                case "x":
+                    isRunning = false;
+                    break;
+                case "X":
                     isRunning = false;
                     break;
                 default:
