@@ -14,9 +14,10 @@ public class Program
         while (isRunning)
         {
             Console.WriteLine("========= Airport Manage System =========\n");
-            Console.WriteLine("1.- Next Flights");
+            Console.WriteLine("1.- Flights");
             Console.WriteLine("2.- Airlines");
             Console.WriteLine("3.- Destinations");
+            Console.WriteLine("4.- Airships");
             Console.WriteLine("X.- Leave");
 
 
@@ -33,6 +34,9 @@ public class Program
                 case "3":
 
                     break;
+                case "4":
+
+                    break;
                 case "x":
                     isRunning = false;
                     break;
@@ -45,7 +49,7 @@ public class Program
 
             }
 
-            
+            Console.ReadLine();
             Console.Clear();
         }
     }
