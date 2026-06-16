@@ -8,7 +8,7 @@ public class CommercialAirplane : Airplanes
     public string Airline {get; set;}
 
 
-    public CommercialAirplane (string model, int capacity, int maxAltitude, float maxSpeed, int firstClassCapacity, string airline) 
+    public CommercialAirplane (string model, int capacity, int maxAltitude, int maxSpeed, int firstClassCapacity, string airline) 
                                 : base (model, capacity, maxAltitude, maxSpeed)
     {
         FirstClassCapacity = firstClassCapacity;
@@ -17,12 +17,26 @@ public class CommercialAirplane : Airplanes
 
     public override string ToString()
     {
-        return $"===== {Model} from {Airline}=====\nTurist Capacity: {Capacity - FirstClassCapacity}\nFirst Class: {FirstClassCapacity}";
+        string status;
+        if (Status == false) {
+            status = "Sin cargar";
+        }
+        else
+        {
+            status = "Cargado";
+        }
+        return $"===== {Model} from {Airline}=====\nTurist Capacity: {Capacity - FirstClassCapacity}\nFirst Class: {FirstClassCapacity}\nStatus: {status} ";
     }
 
     public override void GetInfo()
     {
         Console.WriteLine($"Id: {Id} Model: {Model} Airline: {Airline}");
+    }
+
+    public override void ChargeAirplane()
+    {
+        Status = true;
+        Console.WriteLine($"Airplane {Id} charged");
     }
 
 }

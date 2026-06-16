@@ -6,12 +6,14 @@ public abstract class Airplanes
     public string? Model {get; private set;}
     public int? Capacity {get; private set;}
     public int? MaxAltitude {get; private set;}
-    public float MaxSpeed {get; private set;}
-    protected int Id {get; private set;}
+    public int MaxSpeed {get; private set;}
+    public int Id {get; private set;}
+
+    public bool Status = false;
 
     private static int _nextId = 1;
 
-    protected Airplanes(string model, int capacity, int maxAltitude, float maxSpeed)
+    protected Airplanes(string model, int capacity, int maxAltitude, int maxSpeed)
     {
         Id = _nextId++;
         Model = model;
@@ -22,4 +24,6 @@ public abstract class Airplanes
 
     // Get information to manage flights
     public abstract void GetInfo();
+
+    public abstract void ChargeAirplane();
 } 
