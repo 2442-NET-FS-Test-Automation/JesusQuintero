@@ -1,6 +1,7 @@
 ﻿// If i have code from another namespace I wanto to use here - I use a using statement
 using System.Runtime.CompilerServices;
 using Library.Domain;
+using Serilog;
 namespace LibraryKata.App; // A namespace is like a bucket or logical container for different
 // related code files.
 public class Program
@@ -15,6 +16,14 @@ public class Program
     // void - it doesn't return anything
     public static void Main()
     {   
+        // Lets configure Serilog here before any code execution
+        // Serilog works via a singleton object. Its shared globally
+        // thoughout the app, configure once use anywhere.
+        Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Information() // VERBOSE > DEBUG > INFO > WARNING > Error > Fatal
+                    .WriteTo.Console()          // Sink: where do my logs go? text file, database, etc?
+                    .CreateLogger();            // Create logger based on the configuration above
+
         // When I call dotnet run, it finds Main() and begins code execution at the first line of the 
         // main method. I wrote my code, inside DataTypesAndOperators() - a separate method. So if I want 
         // that code to run, I need to call it inside Main()
@@ -26,6 +35,8 @@ public class Program
 
         Console.WriteLine("\n\n");
         Program.CollectionsDemo();
+
+        Log.CloseAndFlush(); // 
     }
 
     // private - accessible only within this class
