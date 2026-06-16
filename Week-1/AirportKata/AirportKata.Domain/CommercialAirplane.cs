@@ -19,11 +19,11 @@ public class CommercialAirplane : Airplanes
     {
         string status;
         if (Status == false) {
-            status = "Sin cargar";
+            status = "Without charge";
         }
         else
         {
-            status = "Cargado";
+            status = "Charged";
         }
         return $"===== {Model} from {Airline}=====\nTurist Capacity: {Capacity - FirstClassCapacity}\nFirst Class: {FirstClassCapacity}\nStatus: {status} ";
     }

@@ -179,7 +179,7 @@ public class Program
         {
             Console.Write("Please type the Id to charge: ");
             input = Console.ReadLine();
-            if( int.TryParse(input, out inputID)) Console.WriteLine("Please insert a valid id\n");
+            if(! int.TryParse(input, out inputID)) Console.WriteLine("Please insert a valid id\n");
             else if(inputID <= 0) Console.WriteLine("Please insert a positive number\n");
             
             foreach(CommercialAirplane plane in Program.myPlanes)
@@ -219,16 +219,14 @@ public class Program
 
         foreach(CommercialAirplane plane in Program.myPlanes)
         {
-            if (!plane.Status)  plane.GetInfo();
-            
-
+            plane.GetInfo();
         }
         
         while(input is null)
         {
-            Console.Write("Please type the Id to retire: ");
+            Console.Write("\nPlease type the Id to retire: ");
             input = Console.ReadLine();
-            if( int.TryParse(input, out inputID)) Console.WriteLine("Please insert a valid id\n");
+            if(! int.TryParse(input, out inputID)) Console.WriteLine("Please insert a valid id\n");
             else if(inputID <= 0) Console.WriteLine("Please insert a positive number\n");
             
             foreach(CommercialAirplane plane in Program.myPlanes)
@@ -238,6 +236,8 @@ public class Program
                     Program.myPlanes.Remove(plane);
                     finded = true;
                     Console.WriteLine("Plane retired");
+                    Console.ReadLine();
+                    return;
                 }
             }
 
