@@ -24,6 +24,9 @@ public class Program
                     .WriteTo.Console()          // Sink: where do my logs go? text file, database, etc?
                     .CreateLogger();            // Create logger based on the configuration above
 
+
+
+
         // When I call dotnet run, it finds Main() and begins code execution at the first line of the 
         // main method. I wrote my code, inside DataTypesAndOperators() - a separate method. So if I want 
         // that code to run, I need to call it inside Main()
@@ -36,7 +39,13 @@ public class Program
         Console.WriteLine("\n\n");
         Program.CollectionsDemo();
 
-        Log.CloseAndFlush(); // 
+        Console.WriteLine("\n\n");
+        Program.ExceptionsDemo();
+
+
+        // In case thera are any lingering logs by the time we hit line 41 above
+        // Don't just stop execution, write the logs to their sink THEN close the program
+        Log.CloseAndFlush(); 
     }
 
     // private - accessible only within this class
@@ -284,6 +293,82 @@ public class Program
 
         Console.WriteLine($"Trying to add a third thing in our catalog: {shelf.TryAdd(catalog._items[2])}");
 
+    }
+
+    public static void ExceptionsDemo()
+    {
+        Console.WriteLine("\n == Exceptions, patterns, logging ==");
+
+        // By usimg Liskov Substitution from S.O.L.I.D., if I later swap to
+        // a SQLLibraryRepo or whatever, this is the only line I haave to change
+        ILibraryRepository repo = new InMemoryLibraryRepository();
+
+        // Injecting our existing repo object to statisfy LibraryUnitOfWork's dependency
+        IUnitOfWork libraryWork = new LibraryUnitOfWork(repo);
+
+        // Create a book, but using our factory method
+        LibraryItem dune =  LibraryItemFactory.Create(ItemKind.Book, "Dune", "Frank Herbert", copies : 3);
+
+        repo.Add(dune);
+
+        // Magazines need a publisherm but we peovided a default value for the publisher argument in Create
+        // lets see if it works
+        repo.Add(LibraryItemFactory.Create(ItemKind.Magazine, "Wired", "Axel Xman", copies:2));
+
+        // Pretend we're commiting changes to a DB or something
+        libraryWork.Stage("Added 2 items");
+        libraryWork.Commit();
+
+        // We went through the trouble of creating custom exceptions
+        // Lets actually see them work for us. If you have code that can potentially fail
+        // wrap it in a try-catch (optional finally)
+        try
+        {
+            // Potentially offending code goes here
+            LibraryItem missing = repo.GetById(99);
+            Console.WriteLine(missing.Describe()); // we won't hit this I believe
+        }
+        catch (ItemNotFoundExeption ex)
+        {
+            // We stored the offending id on the exception itself, here we can ask fot it for logging
+            Log.Error("Lookout failed for id {Id}: {Message}", ex.Id, ex.Message);
+        }
+        catch (LibraryException ex)
+        {
+            Log.Error("Library Error: {Message}", ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Log.Error("Non Library Error: {Message}", ex.Message);
+        }
+        finally // Optional but adding a finally block adds code that runs
+        {       // Whether an exception is caught or not
+            // Code in a finally block will run even if the try ends in a return
+            // Useful for DB operations where you want to cleanup but you found
+            // the object to return
+            Console.WriteLine("Hit out finally block - lookup attemp done");
+        }
+
+        Book noCopies = new Book("Count of Montecristo", "Alejandro Dumas", 0);
+
+        try
+        {
+            Borrow(noCopies);
+        }
+        catch (ItemNotAvailableExeption ex)
+        {
+            Log.Warning("Borrow refused: {Message}", ex.Message);
+        }
+    }
+
+    public static void Borrow(Book book)
+    {
+        // We can use the Checkout (boolean return) method from the book object
+        // in an if or something
+        if (!book.Checkout())
+        {
+            throw new ItemNotAvailableExeption(book.Title);
+        }
     }
 
 }
