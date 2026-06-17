@@ -1,6 +1,8 @@
 namespace Library.Domain;
 
-public class Catalog
+// I've turned my Catalog class into a partial class
+// I can now stretch it's class definition across multiple files - when I built, all 
+public partial class Catalog
 {
     // Backing out catalog is going to be a list.
     // List<T>: Ordered, grow/shrink dinamically, accesible via index.
@@ -41,8 +43,16 @@ public class Catalog
     // the Catalog decides how. Count was already exposed this way; now the rest is too.
     public int Count => _items.Count;
     public LibraryItem this[int index] => _items[index]; // indexer: read catalog[0] like an array, but read-only
-    public void Add(LibraryItem item) => _items.Add(item);
+    public void Add(LibraryItem item)
+    {
+        _items.Add(item);
+        _authors.Add(item.Author);
+    } 
     public bool Remove(LibraryItem item) => _items.Remove(item);
+
+    // This syntax with the => is the "expression body syntax", if a method only runs a single expression (one line)
+    // then we can use this as a shorthand. The Compiler will infer the rest.
+    public bool IsEmpty => _items.Count == 0;
 
     // --- Stack surface (return cart) ---
     public void DropInReturnCart(LibraryItem item) => _returnCart.Push(item);
