@@ -9,6 +9,8 @@ public class Program
 {
 
     public static List<CommercialAirplane> myPlanes = new List<CommercialAirplane>();
+
+    
     public static void Main()
     {
         bool isRunning = true;
