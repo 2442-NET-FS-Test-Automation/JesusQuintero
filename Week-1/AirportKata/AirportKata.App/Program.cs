@@ -133,7 +133,7 @@ public class Program
 
         CommercialAirplane newplane = new CommercialAirplane(model, capacity, maxAltitude, maxSpeed, firstCapacity, airline);
 
-        Program.myPlanes.Add(newplane);
+        myPlanes.Add(newplane);
 
         Console.WriteLine("\nNew airplane added");
         return;
@@ -143,30 +143,27 @@ public class Program
     public static void ChargeAirplane()
     {
         Console.Clear();
-        string? input = null;
-        int inputID = 0;
+        int inputID;
         bool finded = false;
 
         Console.WriteLine("========= Charge an Airplane =========\n\n");
-        if(Program.myPlanes.Count <= 0)
+        if(myPlanes.Count <= 0)
         {
-                Console.WriteLine("No airplanes registered");
+                Console.WriteLine("Any airplanes registered");
                 Console.ReadLine();
                 return;
         }
         bool uncharged = false;
 
 
-        foreach(CommercialAirplane plane in Program.myPlanes)
+        foreach(CommercialAirplane plane in myPlanes)
         {
             if (!plane.Status)
             {
                 uncharged = true;
                 plane.GetInfo();
             }
-
         }
-
 
         if (!uncharged)
         {
@@ -175,30 +172,20 @@ public class Program
             return;
         }
 
+        inputID = GetIntegerInput("Please type the Id to charge: ", "Id");
         
-        
-        while(input is null)
+        foreach(CommercialAirplane plane in myPlanes)
         {
-            Console.Write("Please type the Id to charge: ");
-            input = Console.ReadLine();
-            if(! int.TryParse(input, out inputID)) Console.WriteLine("Please insert a valid id\n");
-            else if(inputID <= 0) Console.WriteLine("Please insert a positive number\n");
-            
-            foreach(CommercialAirplane plane in Program.myPlanes)
+            if(plane.Id == inputID)
             {
-                if(plane.Id == inputID)
-                {
-                    plane.ChargeAirplane();
-                    finded = true;
-                }
-            }
-
-            if (!finded)
-            {
-                Console.WriteLine($"Lookout failed for Id: {inputID}");
+                plane.ChargeAirplane();
+                Console.ReadLine();
+                return;
             }
         }
 
+        if (!finded) Console.WriteLine($"Lookout failed for Id: {inputID}");
+        
         Console.ReadLine();
     }
 
@@ -206,12 +193,11 @@ public class Program
     public static void RetireAirplane()
     {
         Console.Clear();
-        string? input = null;
-        int inputID = 0;
+        int inputID;
         bool finded = false;
 
         Console.WriteLine("========= Retire an Airplane =========\n\n");
-        if(Program.myPlanes.Count <= 0)
+        if(myPlanes.Count <= 0)
         {
                 Console.WriteLine("No airplanes to retire");
                 Console.ReadLine();
@@ -219,35 +205,30 @@ public class Program
         }
 
 
-        foreach(CommercialAirplane plane in Program.myPlanes)
+        foreach(CommercialAirplane plane in myPlanes)
         {
             plane.GetInfo();
         }
-        
-        while(input is null)
-        {
-            Console.Write("\nPlease type the Id to retire: ");
-            input = Console.ReadLine();
-            if(! int.TryParse(input, out inputID)) Console.WriteLine("Please insert a valid id\n");
-            else if(inputID <= 0) Console.WriteLine("Please insert a positive number\n");
-            
-            foreach(CommercialAirplane plane in Program.myPlanes)
-            {
-                if(plane.Id == inputID)
-                {
-                    Program.myPlanes.Remove(plane);
-                    finded = true;
-                    Console.WriteLine("Plane retired");
-                    Console.ReadLine();
-                    return;
-                }
-            }
 
-            if (!finded)
+        inputID = GetIntegerInput("\nPlease type the Id to retire: ", "ID");
+            
+        foreach(CommercialAirplane plane in myPlanes)
+        {
+            if(plane.Id == inputID)
             {
-                Console.WriteLine($"Lookout failed for Id: {inputID}");
+                myPlanes.Remove(plane);
+                finded = true;
+                Console.WriteLine("Plane retired");
+                Console.ReadLine();
+                return;
             }
         }
+
+        if (!finded)
+        {
+            Console.WriteLine($"Lookout failed for Id: {inputID}");
+        }
+        
 
         Console.ReadLine();
     }
@@ -268,5 +249,24 @@ public class Program
         }
 
         Console.ReadLine();
+    }
+
+    public static int GetIntegerInput(string message, string dataName = "number")
+    {
+        string? input = null;
+        int inputID;
+
+        while(input != null)
+        {
+            Console.Write(message);
+            input = Console.ReadLine();
+            if(! int.TryParse(input, out inputID)) Console.WriteLine($"Please insert a valid {dataName}\n");
+            else if(inputID <= 0) Console.WriteLine($"Please insert a positive {dataName}\n");
+            else return inputID;
+
+            input = null;
+        }
+
+        return -1;
     }
 }
