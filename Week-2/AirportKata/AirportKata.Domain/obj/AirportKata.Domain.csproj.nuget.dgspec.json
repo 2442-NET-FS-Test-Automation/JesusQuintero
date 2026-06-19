@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-1\\AirportKata\\AirportKata.Domain\\AirportKata.Domain.csproj": {}
+    "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-2\\AirportKata\\AirportKata.Domain\\AirportKata.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-1\\AirportKata\\AirportKata.Domain\\AirportKata.Domain.csproj": {
+    "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-2\\AirportKata\\AirportKata.Domain\\AirportKata.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-1\\AirportKata\\AirportKata.Domain\\AirportKata.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-2\\AirportKata\\AirportKata.Domain\\AirportKata.Domain.csproj",
         "projectName": "AirportKata.Domain",
-        "projectPath": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-1\\AirportKata\\AirportKata.Domain\\AirportKata.Domain.csproj",
+        "projectPath": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-2\\AirportKata\\AirportKata.Domain\\AirportKata.Domain.csproj",
         "packagesPath": "C:\\Users\\MasterDigimon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-1\\AirportKata\\AirportKata.Domain\\obj\\",
+        "outputPath": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-2\\AirportKata\\AirportKata.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\MasterDigimon\\AppData\\Roaming\\NuGet\\NuGet.Config"

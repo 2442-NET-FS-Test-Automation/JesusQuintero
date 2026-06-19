@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AirportKata.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+476e27655beea844bddfcab3daae44ee827f539d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a859268cc34a717bd2ebad604db9ed72665e205e")]
 [assembly: System.Reflection.AssemblyProductAttribute("AirportKata.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AirportKata.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
