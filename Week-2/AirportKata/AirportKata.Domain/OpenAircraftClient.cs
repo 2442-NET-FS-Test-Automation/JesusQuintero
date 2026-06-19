@@ -40,7 +40,7 @@ public class OpenAircraftClient
         string airline = foundAirplane.GetProperty("plane_owner").GetString() ?? "Unknown";
 
         Console.WriteLine($"API Information: \nModel {model}\n{airline}");
-
+        
 
         return null;
     }
