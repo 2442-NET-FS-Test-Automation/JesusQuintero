@@ -18,9 +18,9 @@ public class Program
         bool isRunning = true;
         string? option;
 
-        myPlanes.Add(new CommercialAirplane("Boeing 787", 300, 3000, 800, 30, "AeroMexico"));
-        myPlanes.Add(new CommercialAirplane("Airbus A320neo", 200, 2800, 700, 15, "VivaAerobus"));
-        myPlanes.Add(new CommercialAirplane("Airbus A220", 150, 2800, 800, 10, "VivaAerobus"));
+        myPlanes.Add(new CommercialAirplane("Boeing 787", 30, "JET", 2, "AeroMexico"));
+        myPlanes.Add(new CommercialAirplane("Airbus A320neo", 20, "JET", 2, "VivaAerobus"));
+        myPlanes.Add(new CommercialAirplane("Airbus A220", 15, "JET" , 2, "VivaAerobus"));
 
         while (isRunning)
         {
@@ -81,11 +81,13 @@ public class Program
 
         string? model = null;
         string? airline = null;
-        string? capacity_s = null; // This string will be used to get strings for integer inputs and convert it later
         int capacity = 0;
-        int firstCapacity = 0;
-        int maxSpeed = 0;
-        int maxAltitude = 0;
+        int firstCapacity;
+        int age;
+        string? engineModel = null;
+        int engineCount;
+        // int maxSpeed = 0;
+        // int maxAltitude = 0;
 
 
         Console.WriteLine("========== CREATE COMMERCIAL AIRPLANE ==========");
@@ -104,46 +106,26 @@ public class Program
             if(airline is null) Console.WriteLine("Please insert a name of an airline\n");
         }
 
-        while(capacity_s is null || capacity <= 0)
+        while(engineModel is null)
         {
-            Console.Write("Capacity: ");
-            capacity_s = Console.ReadLine();
-            if(! int.TryParse(capacity_s, out capacity)) Console.WriteLine("Please insert a valid number\n");
-            else if(capacity <= 0) Console.WriteLine("Please insert a positive number\n");
+            Console.Write("Engine Model: ");
+            engineModel = Console.ReadLine();
+            if(engineModel is null) Console.WriteLine("Please insert the engine model\n");
         }
+        engineCount = GetIntegerInput("Number of engines: ", "number", 5);
 
-        capacity_s = null;
+        age = GetIntegerInput("Age: ", "years");
+        capacity = GetIntegerInput("Capacity: ", "capacity",capacity);
+        firstCapacity = GetIntegerInput("First class capacity: ", "First Class capacity",capacity);
 
-        while(capacity_s is null || firstCapacity <= 0 || firstCapacity > capacity)
-        {
-            Console.Write("First Class Capacity: ");
-            capacity_s = Console.ReadLine();
-            if(! int.TryParse(capacity_s, out firstCapacity)) Console.WriteLine("Please insert a valid number\n");
-            else if(firstCapacity <= 0) Console.WriteLine("Please insert a positive number\n");
-            else if(firstCapacity > capacity) Console.WriteLine("First Class exeeds plane capacity\n");
-        }
-
-        capacity_s = null;
-
-        while(capacity_s is null || maxSpeed <= 0)
-        {
-            Console.Write("Max Speed (Km/h): ");
-            capacity_s = Console.ReadLine();
-            if(! int.TryParse(capacity_s, out maxSpeed)) Console.WriteLine("Please insert a valid number\n");
-            else if(maxSpeed <= 0) Console.WriteLine("Please insert a positive number\n");
-        }
-
-        capacity_s = null;
-
-        while(capacity_s is null || maxAltitude <= 0)
-        {
-            Console.Write("Max Altitude (m): ");
-            capacity_s = Console.ReadLine();
-            if(! int.TryParse(capacity_s, out maxAltitude)) Console.WriteLine("Please insert a valid number\n");
-            else if(maxAltitude <= 0) Console.WriteLine("Please insert a positive number\n");
-        }
-
-        CommercialAirplane newplane = new CommercialAirplane(model, capacity, maxAltitude, maxSpeed, firstCapacity, airline);
+        // Modificar cuando se tengan diccionarios
+        CommercialAirplane newplane = new CommercialAirplane(model, 
+                                                             age, 
+                                                             engineModel, 
+                                                             engineCount, 
+                                                             airline, 
+                                                             firstCapacity, 
+                                                             capacity);
 
         myPlanes.Add(newplane);
 
