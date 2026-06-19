@@ -5,9 +5,10 @@ public static class AirplaneFactory
     public static Airplanes Create(
         ItemKind kind,
         string model,
-        int capacity,
-        int max_altitude,
-        int max_speed,
+        int airplaneAge,
+        string engineType,
+        int engineCount,
+        int capacity = 0,
         int firstclasscapacity = 0,
         string airline = "Unknown"
     )
@@ -15,7 +16,7 @@ public static class AirplaneFactory
         switch (kind)
         {
             case ItemKind.CommercialAirplane:
-                return new CommercialAirplane(model, capacity,max_altitude,max_speed,firstclasscapacity,airline);
+                return new CommercialAirplane(model, airplaneAge, engineType, engineCount, airline, firstclasscapacity, capacity);
             default:
                 throw new Exception();
 

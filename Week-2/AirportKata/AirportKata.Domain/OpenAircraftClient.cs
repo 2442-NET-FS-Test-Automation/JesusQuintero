@@ -21,8 +21,8 @@ public class OpenAircraftClient
         catch(Exception ex)
         {
             Log.Warning("Exception trying to connet with API: {Message}", ex.Message);
+            return null;
         }
-        return null;
     }
 
     public static Airplanes? Parse(string json)
@@ -38,10 +38,13 @@ public class OpenAircraftClient
 
         string model = foundAirplane.GetProperty("production_line").GetString() ?? "Unknown";
         string airline = foundAirplane.GetProperty("plane_owner").GetString() ?? "Unknown";
+        int age = foundAirplane.GetProperty("plane_age").GetInt32();
+        string engineType = foundAirplane.GetProperty("engines_type").GetString() ?? "Unknown";
+        int engineCount = foundAirplane.GetProperty("engines_count").GetInt32();
 
         Console.WriteLine($"API Information: \nModel {model}\n{airline}");
         
 
-        return null;
+        return AirplaneFactory.Create(ItemKind.CommercialAirplane, model, age, engineType, engineCount);
     }
 }
