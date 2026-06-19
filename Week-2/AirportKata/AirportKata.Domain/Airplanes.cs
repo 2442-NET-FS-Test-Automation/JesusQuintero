@@ -7,7 +7,7 @@ public abstract class Airplanes
     public int Capacity {get; private set;}
 
     public int AirplaneAge;
-    public string EnginesModel;
+    public string EnginesType;
     public int EnginesCount;
 
     // public int? MaxAltitude {get; private set;}
@@ -21,7 +21,7 @@ public abstract class Airplanes
         Model = model;
         Capacity = capacity;
         AirplaneAge = airplaneAge;
-        EnginesModel = engineModel;
+        EnginesType = engineModel;
         EnginesCount = engineCount;
         // MaxAltitude = maxAltitude;
         // MaxSpeed = maxSpeed;
