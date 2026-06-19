@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Airport.Domain;
+using Serilog;
 //using Airport.Domain;
 
 namespace Airport.App;
@@ -12,7 +13,7 @@ public class Program
      
 
     
-    public static void Main()
+    public static async Task Main()
     {
         bool isRunning = true;
         string? option;
@@ -30,6 +31,7 @@ public class Program
             Console.WriteLine("3.- Retire Airplane");
             Console.WriteLine("4.- List of Airplanes");
             Console.WriteLine("5.- Boarded Airplanes");
+            Console.WriteLine("6.- Test API");
             Console.WriteLine("X.- Leave");
 
 
@@ -50,7 +52,10 @@ public class Program
                     Program.ListAirplanes();
                     break;
                 case "5":
-                    
+                    GetBoardedAirplanes();
+                    break;
+                case "6":
+                    await AssyncHttpRequest();
                     break;
                 case "x":
                     isRunning = false;
@@ -302,5 +307,19 @@ public class Program
         }
 
         return -1;
+    }
+
+    public static async Task AssyncHttpRequest()
+    {
+        OpenAircraftClient client = new();
+
+        string[] isbn = {"8b90a9a6019b99352399dd56f8664ef0"};
+
+        Task<Airplanes?>[] fetchedAirplanes = new Task<Airplanes?>[isbn.Length];
+
+        for(int i = 0; i < isbn.Length; i++)
+        {
+            fetchedAirplanes[i] = client.FetchByIdAsync(isbn[i]);
+        }
     }
 }
