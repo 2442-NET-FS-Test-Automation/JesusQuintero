@@ -10,6 +10,7 @@ public class Program
 {
 
     public static List<CommercialAirplane> myPlanes = new List<CommercialAirplane>();
+    private static CommercialAirplane? lastRegisteredAirplane;
 
 
 
@@ -33,6 +34,8 @@ public class Program
             Console.WriteLine("5.- Boarded Airplanes");
             Console.WriteLine("6.- Test API");
             Console.WriteLine("7.- Priority an Airplane");
+            Console.WriteLine("8.- Undo Register Airplane");
+            Console.WriteLine("9.- Serve Next Airplane");
             Console.WriteLine("X.- Leave");
 
 
@@ -60,6 +63,12 @@ public class Program
                     break;
                 case "7":
                     PutAtFirst();
+                    break;
+                case "8":
+                    UndoLastAction();
+                    break;
+                case "9":
+                    ServeNextAirplane();
                     break;
                 case "x":
                     isRunning = false;
@@ -132,6 +141,7 @@ public class Program
                                                              capacity);
 
         myPlanes.Add(newplane);
+        lastRegisteredAirplane = newplane;
 
         Console.WriteLine("\nNew airplane added");
         return;
@@ -345,5 +355,44 @@ public class Program
         myPlanes = reordered;
         Console.WriteLine();
 
+    }
+
+    public static void UndoLastAction()
+    {
+        Console.Clear();
+        Console.WriteLine("========= Undo Register Airplane =========\n");
+
+        if (lastRegisteredAirplane is null || !myPlanes.Contains(lastRegisteredAirplane))
+        {
+            Console.WriteLine("No registered airplane to undo");
+            Console.ReadLine();
+            return;
+        }
+
+        myPlanes.Remove(lastRegisteredAirplane);
+        Console.WriteLine($"Undo complete: airplane {lastRegisteredAirplane.Id} removed");
+        lastRegisteredAirplane = null;
+        Console.ReadLine();
+    }
+
+    public static void ServeNextAirplane()
+    {
+        Console.Clear();
+        Console.WriteLine("========= Serve Next Airplane =========\n");
+
+        if (myPlanes.Count == 0)
+        {
+            Console.WriteLine("No airplanes pending to be served");
+            Console.ReadLine();
+            return;
+        }
+
+        CommercialAirplane nextAirplane = myPlanes[0];
+
+        Console.WriteLine("Next airplane served:");
+        nextAirplane.GetInfo();
+        myPlanes.RemoveAt(0);
+        Console.WriteLine($"\nRemaining airplanes: {myPlanes.Count}");
+        Console.ReadLine();
     }
 }
