@@ -5,18 +5,26 @@ public abstract class Airplanes
 {
     public string? Model {get; private set;}
     public int Capacity {get; private set;}
-    public int? MaxAltitude {get; private set;}
-    public int MaxSpeed {get; private set;}
+
+    public int AirplaneAge;
+    public string EnginesType;
+    public int EnginesCount;
+
+    // public int? MaxAltitude {get; private set;}
+    // public int MaxSpeed {get; private set;}
     public int Id {get; private set;}
     private static int _nextId = 1;
 
-    protected Airplanes(string model, int capacity, int maxAltitude, int maxSpeed)
+    protected Airplanes(string model, int airplaneAge, string engineModel, int engineCount, int capacity = -1)
     {
         Id = _nextId++;
         Model = model;
         Capacity = capacity;
-        MaxAltitude = maxAltitude;
-        MaxSpeed = maxSpeed;
+        AirplaneAge = airplaneAge;
+        EnginesType = engineModel;
+        EnginesCount = engineCount;
+        // MaxAltitude = maxAltitude;
+        // MaxSpeed = maxSpeed;
     } 
 
     // Get information to manage flights

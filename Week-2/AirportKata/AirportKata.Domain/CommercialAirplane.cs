@@ -9,8 +9,14 @@ public class CommercialAirplane : Airplanes, IBoardable
     public bool Boarded = false;
     private int[] Passengers = {0, 0};
 
-    public CommercialAirplane (string model, int capacity, int maxAltitude, int maxSpeed, int firstClassCapacity, string airline) 
-                                : base (model, capacity, maxAltitude, maxSpeed)
+    public CommercialAirplane (string model, 
+                               int airplaneAge, 
+                               string engineModel, 
+                               int engineCount,
+                               string airline,
+                               int firstClassCapacity = -1,
+                               int capacity = -1) 
+                                : base (model, airplaneAge, engineModel, engineCount, capacity)
     {
         FirstClassCapacity = firstClassCapacity;
         Airline = airline;
