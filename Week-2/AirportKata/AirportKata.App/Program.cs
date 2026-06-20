@@ -10,9 +10,9 @@ public class Program
 {
 
     public static List<CommercialAirplane> myPlanes = new List<CommercialAirplane>();
-     
 
-    
+
+
     public static async Task Main()
     {
         bool isRunning = true;
@@ -24,7 +24,7 @@ public class Program
 
         while (isRunning)
         {
-            
+
             Console.WriteLine("========= Airplane Manage System =========\n");
             Console.WriteLine("1.- Register Airplane");
             Console.WriteLine("2.- Charge Airplane");
@@ -32,6 +32,7 @@ public class Program
             Console.WriteLine("4.- List of Airplanes");
             Console.WriteLine("5.- Boarded Airplanes");
             Console.WriteLine("6.- Test API");
+            Console.WriteLine("7.- Priority an Airplane");
             Console.WriteLine("X.- Leave");
 
 
@@ -57,6 +58,9 @@ public class Program
                 case "6":
                     await AssyncHttpRequest();
                     break;
+                case "7":
+                    PutAtFirst();
+                    break;
                 case "x":
                     isRunning = false;
                     break;
@@ -65,7 +69,7 @@ public class Program
                     break;
                 default:
 
-                break;
+                    break;
 
             }
 
@@ -91,19 +95,19 @@ public class Program
 
 
         Console.WriteLine("========== CREATE COMMERCIAL AIRPLANE ==========");
-        
-        while(model is null)
+
+        while (model is null)
         {
             Console.Write("Airplane model: ");
             model = Console.ReadLine();
-            if(model is null) Console.WriteLine("Please insert a model of an airplane\n");
+            if (model is null) Console.WriteLine("Please insert a model of an airplane\n");
         }
 
-        while(airline is null)
+        while (airline is null)
         {
             Console.Write("Airline: ");
             airline = Console.ReadLine();
-            if(airline is null) Console.WriteLine("Please insert a name of an airline\n");
+            if (airline is null) Console.WriteLine("Please insert a name of an airline\n");
         }
 
         while(engineModel is null)
@@ -131,7 +135,7 @@ public class Program
 
         Console.WriteLine("\nNew airplane added");
         return;
-        
+
     }
 
     // Get the information to board an airplane
@@ -143,16 +147,16 @@ public class Program
         int[] passengers = new int[2];
 
         Console.WriteLine("========= Board an Airplane =========\n\n");
-        if(myPlanes.Count <= 0)
+        if (myPlanes.Count <= 0)
         {
-                Console.WriteLine("Any airplanes registered");
-                Console.ReadLine();
-                return;
+            Console.WriteLine("Any airplanes registered");
+            Console.ReadLine();
+            return;
         }
         bool uncharged = false;
 
 
-        foreach(CommercialAirplane plane in myPlanes)
+        foreach (CommercialAirplane plane in myPlanes)
         {
             if (!plane.Boarded)
             {
@@ -169,17 +173,17 @@ public class Program
         }
 
         inputID = GetIntegerInput("Please type the Id to board: ", "Id");
-        
-        foreach(CommercialAirplane plane in myPlanes)
+
+        foreach (CommercialAirplane plane in myPlanes)
         {
-            if(plane.Id == inputID)
+            if (plane.Id == inputID)
             {
-                passengers[0] = GetIntegerInput("Number of commercial class boarding: ", 
-                                                "Commercial Class", 
-                                                limit:plane.Capacity-plane.FirstClassCapacity);
-                passengers[1] = GetIntegerInput("Number of first class boarding: ", 
-                                                "First Class", 
-                                                limit:plane.FirstClassCapacity);
+                passengers[0] = GetIntegerInput("Number of commercial class boarding: ",
+                                                "Commercial Class",
+                                                limit: plane.Capacity - plane.FirstClassCapacity);
+                passengers[1] = GetIntegerInput("Number of first class boarding: ",
+                                                "First Class",
+                                                limit: plane.FirstClassCapacity);
                 plane.Board(passengers);
                 Console.ReadLine();
                 return;
@@ -187,7 +191,7 @@ public class Program
         }
 
         if (!finded) Console.WriteLine($"Lookout failed for Id: {inputID}");
-        
+
         Console.ReadLine();
     }
 
@@ -200,24 +204,24 @@ public class Program
         bool finded = false;
 
         Console.WriteLine("========= Retire an Airplane =========\n\n");
-        if(myPlanes.Count <= 0)
+        if (myPlanes.Count <= 0)
         {
-                Console.WriteLine("No airplanes to retire");
-                Console.ReadLine();
-                return;
+            Console.WriteLine("No airplanes to retire");
+            Console.ReadLine();
+            return;
         }
 
 
-        foreach(CommercialAirplane plane in myPlanes)
+        foreach (CommercialAirplane plane in myPlanes)
         {
             plane.GetInfo();
         }
 
         inputID = GetIntegerInput("\nPlease type the Id to retire: ", "ID");
-            
-        foreach(CommercialAirplane plane in myPlanes)
+
+        foreach (CommercialAirplane plane in myPlanes)
         {
-            if(plane.Id == inputID)
+            if (plane.Id == inputID)
             {
                 myPlanes.Remove(plane);
                 finded = true;
@@ -231,7 +235,7 @@ public class Program
         {
             Console.WriteLine($"Lookout failed for Id: {inputID}");
         }
-        
+
 
         Console.ReadLine();
     }
@@ -241,16 +245,29 @@ public class Program
     {
         Console.Clear();
         Console.WriteLine("========= My Airplanes =========\n\n");
-        if(Program.myPlanes.Count == 0)
+        if (Program.myPlanes.Count == 0)
         {
             Console.WriteLine("We don't have any airplanes");
             Console.ReadLine();
             return;
         }
 
-        foreach(CommercialAirplane plane in Program.myPlanes)
+        var properties = typeof(CommercialAirplane).GetProperties();
+
+        foreach (var property in properties)
         {
-            Console.WriteLine(plane);
+            Console.Write($"{property.Name,-20}");
+        }
+        Console.WriteLine();
+
+        foreach (CommercialAirplane plane in myPlanes)
+        {
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(plane);
+                Console.Write($"{value,-20}");
+            }
+            Console.WriteLine();
         }
 
         Console.ReadLine();
@@ -261,7 +278,7 @@ public class Program
     {
         Console.Clear();
         Console.WriteLine("========= Boarded Airplanes =========\n\n");
-        foreach(CommercialAirplane plane in myPlanes)
+        foreach (CommercialAirplane plane in myPlanes)
         {
             if (!plane.Boarded) continue;
             plane.BoardStatus();
@@ -276,13 +293,13 @@ public class Program
         string? input = null;
         int inputID;
 
-        while(input != null)
+        while (input != null)
         {
             Console.Write(message);
             input = Console.ReadLine();
-            if(! int.TryParse(input, out inputID)) Console.WriteLine($"Please insert a valid {dataName}\n");
-            else if(inputID <= 0) Console.WriteLine($"Please insert a positive {dataName}\n");
-            else if(limit != -1 && inputID > limit) Console.WriteLine($"The given number exceeds the limit of {dataName}");
+            if (!int.TryParse(input, out inputID)) Console.WriteLine($"Please insert a valid {dataName}\n");
+            else if (inputID <= 0) Console.WriteLine($"Please insert a positive {dataName}\n");
+            else if (limit != -1 && inputID > limit) Console.WriteLine($"The given number exceeds the limit of {dataName}");
             else return inputID;
 
             input = null;
@@ -295,14 +312,38 @@ public class Program
     {
         OpenAircraftClient client = new();
 
-        string[] isbn = {"8b90a9a6019b99352399dd56f8664ef0"};
+        string[] isbn = { "8b90a9a6019b99352399dd56f8664ef0" };
 
         Task<Airplanes?>[] fetchedAirplanes = new Task<Airplanes?>[isbn.Length];
 
-        for(int i = 0; i < isbn.Length; i++)
+        for (int i = 0; i < isbn.Length; i++)
         {
             fetchedAirplanes[i] = client.FetchByIdAsync(isbn[i]);
         }
         // Pendiente
+    }
+
+    public static void PutAtFirst()
+    {
+        Console.WriteLine("========= Priority in a Plane =========\n\n");
+        Console.WriteLine("Insert plane Id to make it priority: ");
+        string? idInput = Console.ReadLine();
+        int idPrio = 0;
+
+        while (idInput is null || idPrio <= 0)
+        {
+            Console.WriteLine("Insert a valid Id");
+            idInput = Console.ReadLine();
+
+            if (!int.TryParse(idInput, out idPrio)) Console.WriteLine("Please insert a valid number\n");
+            else if (idPrio <= 0 || idPrio > myPlanes.Count) Console.WriteLine("Please insert a valid Id\n");
+        }
+        var reordered = myPlanes
+            .OrderByDescending(p => p.Id == idPrio)
+            .ToList();
+
+        myPlanes = reordered;
+        Console.WriteLine();
+
     }
 }
