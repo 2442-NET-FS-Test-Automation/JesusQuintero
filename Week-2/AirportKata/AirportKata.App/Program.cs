@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Airport.Domain;
 using Serilog;
-//using Airport.Domain;
 
 namespace Airport.App;
 
@@ -17,12 +16,16 @@ public class Program
 
     public static async Task Main()
     {
+        Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Information() 
+                    .WriteTo.Console()          
+                    .CreateLogger();  
         bool isRunning = true;
         string? option;
 
-        myPlanes.Add(new CommercialAirplane("Boeing 787", 30, "JET", 2, "AeroMexico"));
-        myPlanes.Add(new CommercialAirplane("Airbus A320neo", 20, "JET", 2, "VivaAerobus"));
-        myPlanes.Add(new CommercialAirplane("Airbus A220", 15, "JET" , 2, "VivaAerobus"));
+        myPlanes.Add(new CommercialAirplane("Boeing 787", 30, "JET", 2, "AeroMexico", 30, 300));
+        myPlanes.Add(new CommercialAirplane("Airbus A320neo", 20, "JET", 2, "VivaAerobus", 10, 100));
+        myPlanes.Add(new CommercialAirplane("Airbus A220", 15, "JET" , 2, "VivaAerobus", 15, 200));
 
         while (isRunning)
         {
@@ -158,10 +161,11 @@ public class Program
         int[] passengers = new int[2];
 
         Console.WriteLine("========= Board an Airplane =========\n\n");
-        if (myPlanes.Count <= 0)
+        if (myPlanes.IsEmpty)
         {
-            Console.WriteLine("Any airplanes registered");
+            Log.Information("Any airplanes registered");
             Console.ReadLine();
+            Console.Clear();
             return;
         }
         bool uncharged = false;
@@ -262,7 +266,8 @@ public class Program
         Console.WriteLine("========= My Airplanes =========\n\n");
         if (Program.myPlanes.Count == 0)
         {
-            Console.WriteLine("We don't have any airplanes");
+            // Console.WriteLine("We don't have any airplanes");
+            Log.Information("We don't have any airplanes");
             Console.ReadLine();
             return;
         }
@@ -275,13 +280,14 @@ public class Program
         }
         Console.WriteLine();
 
-        foreach (CommercialAirplane plane in myPlanes)
+        foreach (Airplanes plane in myPlanes)
         {
-            foreach (var property in properties)
-            {
-                var value = property.GetValue(plane);
-                Console.Write($"{value,-20}");
-            }
+            plane.GetGridInfo();
+            // foreach (var property in properties)
+            // {
+            //     var value = property.GetValue(plane);
+            //     Console.Write($"{value,-20}");
+            // }
             Console.WriteLine();
         }
 
@@ -333,9 +339,12 @@ public class Program
 
         for (int i = 0; i < isbn.Length; i++)
         {
+            Console.WriteLine("Previous Fetch");
             fetchedAirplanes[i] = client.FetchByIdAsync(isbn[i]);
+            Console.WriteLine("After Fetch");
         }
-        Airplanes[]? foundPlanes = await Task.WhenAll(fetchedAirplanes);
+
+         Airplanes[]? foundPlanes = await Task.WhenAll(fetchedAirplanes);
 
         Airplanes? firstPlaneFound = foundPlanes.Length > 0 ? foundPlanes[0] : null;
         if(firstPlaneFound != null)
@@ -348,6 +357,7 @@ public class Program
             Log.Warning("No plane founded via API");
         }
         
+        Console.ReadLine();
     }
 
     public static void PutAtFirst()

@@ -30,4 +30,6 @@ public abstract class Airplanes
     // Get information to manage flights
     public abstract void GetInfo();
 
+    public abstract void GetGridInfo();
+
 } 

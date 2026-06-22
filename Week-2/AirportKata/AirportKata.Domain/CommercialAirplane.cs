@@ -41,6 +41,11 @@ public class CommercialAirplane : Airplanes, IBoardable
         Console.WriteLine($"Id: {Id} Model: {Model} Airline: {Airline}");
     }
 
+    public override void GetGridInfo()
+    {
+        Console.Write($"Id: {Id,-5} Model: {Model,-20} Airline: {Airline,-20} Age: {AirplaneAge, -5}, Engines type: {EnginesType, -10} Capacity: {Capacity, -5}, FirstClass Capacity: {FirstClassCapacity}");
+    }
+
     public void Board(int[] passengers)
     {
         Boarded = true;

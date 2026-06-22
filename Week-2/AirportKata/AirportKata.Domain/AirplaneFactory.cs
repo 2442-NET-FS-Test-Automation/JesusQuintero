@@ -16,7 +16,7 @@ public static class AirplaneFactory
         switch (kind)
         {
             case ItemKind.CommercialAirplane:
-                return new CommercialAirplane(model, airplaneAge, engineType, engineCount, airline, firstclasscapacity, capacity);
+                return new CommercialAirplane(model, airplaneAge, engineType, engineCount, airline, capacity, firstclasscapacity);
             default:
                 throw new Exception();
 
