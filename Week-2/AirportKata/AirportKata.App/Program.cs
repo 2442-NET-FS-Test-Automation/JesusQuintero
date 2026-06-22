@@ -9,7 +9,8 @@ namespace Airport.App;
 public class Program
 {
 
-    public static List<CommercialAirplane> myPlanes = new List<CommercialAirplane>();
+    //public static List<CommercialAirplane> myPlanes = new List<CommercialAirplane>();
+    public static Catalog myPlanes = new();
     private static CommercialAirplane? lastRegisteredAirplane;
 
 
@@ -200,7 +201,11 @@ public class Program
             }
         }
 
-        if (!finded) Console.WriteLine($"Lookout failed for Id: {inputID}");
+        if (!finded)
+        {
+            Log.Warning("Lookout failed for Id: {inputID}",inputID);
+            throw new AirplaneNotFoundException(inputID);
+        } 
 
         Console.ReadLine();
     }
@@ -330,7 +335,19 @@ public class Program
         {
             fetchedAirplanes[i] = client.FetchByIdAsync(isbn[i]);
         }
-        // Pendiente
+        Airplanes[]? foundPlanes = await Task.WhenAll(fetchedAirplanes);
+
+        Airplanes? firstPlaneFound = foundPlanes.Length > 0 ? foundPlanes[0] : null;
+        if(firstPlaneFound != null)
+        {
+            myPlanes.Add(firstPlaneFound);
+            Log.Information("New plane added");
+        }
+        else
+        {
+            Log.Warning("No plane founded via API");
+        }
+        
     }
 
     public static void PutAtFirst()
@@ -342,17 +359,17 @@ public class Program
 
         while (idInput is null || idPrio <= 0)
         {
-            Console.WriteLine("Insert a valid Id");
+            Log.Information("Insert a valid Id");
             idInput = Console.ReadLine();
 
             if (!int.TryParse(idInput, out idPrio)) Console.WriteLine("Please insert a valid number\n");
             else if (idPrio <= 0 || idPrio > myPlanes.Count) Console.WriteLine("Please insert a valid Id\n");
         }
-        var reordered = myPlanes
+        var reordered = myPlanes.Planes
             .OrderByDescending(p => p.Id == idPrio)
             .ToList();
 
-        myPlanes = reordered;
+        myPlanes.SetList(reordered);
         Console.WriteLine();
 
     }
@@ -364,7 +381,7 @@ public class Program
 
         if (lastRegisteredAirplane is null || !myPlanes.Contains(lastRegisteredAirplane))
         {
-            Console.WriteLine("No registered airplane to undo");
+            Log.Information("No registered airplane to undo");
             Console.ReadLine();
             return;
         }
@@ -382,16 +399,17 @@ public class Program
 
         if (myPlanes.Count == 0)
         {
-            Console.WriteLine("No airplanes pending to be served");
+            // Console.WriteLine("No airplanes pending to be served");
+            Log.Information("No airplanes pending to be served");
             Console.ReadLine();
             return;
         }
 
-        CommercialAirplane nextAirplane = myPlanes[0];
+        Airplanes nextAirplane = myPlanes.Planes[0];
 
         Console.WriteLine("Next airplane served:");
         nextAirplane.GetInfo();
-        myPlanes.RemoveAt(0);
+        myPlanes.Remove(nextAirplane);
         Console.WriteLine($"\nRemaining airplanes: {myPlanes.Count}");
         Console.ReadLine();
     }

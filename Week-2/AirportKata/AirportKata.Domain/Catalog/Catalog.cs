@@ -2,25 +2,30 @@ namespace Airport.Domain;
 
 public partial class Catalog
 {
-    public readonly List<Airplanes> planes = new();
+    public List<Airplanes> Planes = new();
 
     public readonly Dictionary<int, Airplanes> dictPlanes = new();
 
-    public int Count => planes.Count;
+    public int Count => Planes.Count;
 
-    public bool IsEmpty => planes.Count == 0;
+    public bool IsEmpty => Planes.Count == 0;
 
     public void Add(Airplanes plane)
     {
-        planes.Add(plane);
+        Planes.Add(plane);
         dictPlanes.Add(plane.Id, plane);
     }
 
     public bool Remove(Airplanes plane)
     {
-        planes.Remove(plane);
+        Planes.Remove(plane);
         dictPlanes.Remove(plane.Id);
         return true;
+    }
+
+    public void SetList(List<Airplanes> newPlanes)
+    {
+        Planes = newPlanes;
     }
 }
     
