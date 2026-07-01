@@ -10,9 +10,48 @@ using Library.Data;
 // Builder area
 var builder = WebApplication.CreateBuilder(args);
 
+// The first thing that we need is to give our builder a connection string to our database
+// var conn_string = "Data Source=localhost,1433;User ID=sa;Password=LibraryPass1!;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30";
+var conn_string = "Server=localhost,1433;Database=LibraryMinimalDb;User Id=sa;Password=LibraryPass1!;TrustServerCertificate=true";
+
+
+// Tell the builder to use our LibraryDBContext with the connection sttring above
+// By registering our DBContext class (or even classes, technically you use one per Database)
+// we hand off the managging of creating and destroying these DBContext objects to ASP.NET's
+// dependency injection container Like spring beans if you're familiar.
+builder.Services.AddDbContext<LibraryDBContext>(options => options.UseSqlServer(conn_string));
+
+// Swagger stuff added to builder
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // App area
 var app = builder.Build();
 
+// Swager stuff added to app
+app.UseSwagger();
+app.UseSwaggerUI();
+
+
+// Endpoint area
 app.MapGet("/", () => "Hello World!");
 
+// Get all items from the inventory
+app.MapGet("/Inventory", async (LibraryDBContext db) => {
+    return await db.Inventory.ToListAsync();
+});
+
+// Lets use LINQ - Language Integrated Query
+// LINQ is a library that just lets us query collections
+// The logic actually flows from SQL DQL - You can use method OR sql query syntax
+// You can even save the queries themselves as C# objects if you want to
+app.MapGet("/Inventory/by-value", (LibraryDBContext db) =>
+{
+    return db.Inventory.Include(i => i.Product)
+                        .GroupBy(i => i.CurrentStock >= 5 ? "Well-Stocked" : "Low") // group by just like in sql
+                        .Select(g => new { tier = g.Key, count = g.Count(), units = g.Sum(i => i.CurrentStock)})
+                        .ToList();
+});
+
+// My file always ends with app.Run() - minimal API or Controller API
 app.Run();
