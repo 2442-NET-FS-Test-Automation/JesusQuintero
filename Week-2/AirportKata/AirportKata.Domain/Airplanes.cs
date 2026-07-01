@@ -23,8 +23,6 @@ public abstract class Airplanes
         AirplaneAge = airplaneAge;
         EnginesType = engineModel;
         EnginesCount = engineCount;
-        // MaxAltitude = maxAltitude;
-        // MaxSpeed = maxSpeed;
     } 
 
     // Get information to manage flights
