@@ -18,6 +18,12 @@ public class LibraryDBContext : DbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<InventoryItem> Inventory => Set<InventoryItem>();
 
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderLine> OrderLine => Set<OrderLine>();
+    public DbSet<FulfillmentEvent> fulfillmentEvents {get; set; }
+
+
     // If I want to do things like deeper configurations options or data seeding
     // I can override a method we inherited from DBContext
     // called OnModelCreating() - this is called when EF Core creates a migration
@@ -44,6 +50,14 @@ public class LibraryDBContext : DbContext
                     .HasForeignKey<InventoryItem>(i=>i.ProductId);
         });
 
+        // Setting our Row Version property as an EF Core Row Version
+        b.Entity<InventoryItem>().Property(i => i.RowVersion).IsRowVersion();
+
+        // This order operations, setting string lenght and then telling DB that a column
+        // is unique is specific to strings + SQL Server
+        b.Entity<Customer>().Property(c => c.Email).HasMaxLength(256); // Setting length of email first...
+        b.Entity<Customer>().HasIndex(c => c.Email).IsUnique();
+
         // After you've configured your entities (if you do any config in the override)
         // we can use OnModelCreating to seed data
         b.Entity<Product>().HasData(
@@ -56,6 +70,14 @@ public class LibraryDBContext : DbContext
             new InventoryItem {Id = 1, ProductId = 1, CurrentStock = 5},
             new InventoryItem {Id = 2, ProductId = 2, CurrentStock = 3},
             new InventoryItem {Id = 3, ProductId = 3, CurrentStock = 8}
+        );
+
+
+        // Has data runs inside the migration BEFORE SQL SERVER can hand out identify keys
+        // Wich is why we give explicit PK's when seeding
+        b.Entity<Customer>().HasData(
+            new Customer {Id = 1, Name = "Ada Lovelace", Email = "ada@example.com"},
+            new Customer {Id = 2, Name = "Alan Turing", Email = "alan@example.com"}
         );
     }
 }

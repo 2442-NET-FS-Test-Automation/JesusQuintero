@@ -1,0 +1,15 @@
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\bin\Debug\net10.0\DsaThreading.exe
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\bin\Debug\net10.0\DsaThreading.deps.json
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\bin\Debug\net10.0\DsaThreading.runtimeconfig.json
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\bin\Debug\net10.0\DsaThreading.dll
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\bin\Debug\net10.0\DsaThreading.pdb
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\DsaThreading.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\DsaThreading.AssemblyInfoInputs.cache
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\DsaThreading.AssemblyInfo.cs
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\DsaThreading.csproj.CoreCompileInputs.cache
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\DsaThreading.sourcelink.json
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\DsaThreading.dll
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\refint\DsaThreading.dll
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\DsaThreading.pdb
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\DsaThreading.genruntimeconfig.cache
+C:\Users\MasterDigimon\OneDrive\Documentos\Proyectos\REVATURE TRAINING\JesusQuintero\Week-4\dsa-demo\DsaThreading\obj\Debug\net10.0\ref\DsaThreading.dll
