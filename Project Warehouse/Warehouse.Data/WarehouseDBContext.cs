@@ -120,6 +120,15 @@ public class WarehouseDBContext : DbContext
         b.Entity<Movements>().Property(i => i.RowVersion).IsRowVersion();
         b.Entity<Shipments>().Property(i => i.RowVersion).IsRowVersion();
 
+        // Setting unique values
+        b.Entity<Users>().HasIndex(c => c.User_Email).IsUnique();
+        b.Entity<Locations>().HasIndex(c => c.Location_Name).IsUnique();
+        b.Entity<Materials>().HasIndex(c => c.Material_Name).IsUnique();
+        b.Entity<Models>().HasIndex(c => c.Model_Name).IsUnique();
+        b.Entity<Vendors>().HasIndex(c => c.Vendor_Email).IsUnique();
+        b.Entity<Vendors>().HasIndex(c => c.Vendor_Name).IsUnique();
+        b.Entity<Customers>().HasIndex(c => c.Customer_Email).IsUnique();
+
                         
         
         
