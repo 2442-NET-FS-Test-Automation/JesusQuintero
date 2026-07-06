@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
-namespace Warehouse.Data;
+namespace Warehouse.Data.Entities;
 
 public class Shipments
 {
@@ -14,7 +15,7 @@ public class Shipments
     [Required]
     public DateOnly Shipment_Date {get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
-    [Required, Range(.1, float.MaxValue)]
+    [Required, Range(.1, float.MaxValue), Precision(10,2)]
     public float Sale_Price {get; set; }
 
     [Required]

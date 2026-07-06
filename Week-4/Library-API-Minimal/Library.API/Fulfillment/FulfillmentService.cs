@@ -1,6 +1,7 @@
 // This class will hold the business logic/db retry logic fot fulfilling transactions
 
 using System.Data;
+using System.Runtime.InteropServices;
 using Library.Data;
 using Library.Data.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -32,11 +33,13 @@ public class FulfillmentService : IFulfillmentService
     // If we need a DBContext or DBContectFactory or Logger or any other dependency
     // we DO NOT instantiate one here, we ask for one via the Constructor
     private readonly IDbContextFactory<LibraryDBContext> _factory; // holds my factory
+    private readonly BurstPlanner _planner; // holds my BusrtPlanner object
     
     // The factory in the constructor arguments list comes from the ASP.NET DI Container
-    public FulfillmentService(IDbContextFactory<LibraryDBContext> factory)
+    public FulfillmentService(IDbContextFactory<LibraryDBContext> factory, BurstPlanner planner)
     {
         _factory = factory;
+        _planner = planner;
     }
 
     // This method is going to handle filfillment - its gonna be a bit long. Wich is why we didn't
@@ -52,7 +55,7 @@ public class FulfillmentService : IFulfillmentService
 
         // Lets create that dictionary with the productId key and the OrderId value
         // yay for LINQ/Collections namespace
-        var requested = order.Lines.ToDictionary(l => l.ProductId, l => l.OrderId);
+        var requested = order.Lines.ToDictionary(l => l.ProductId, l => l.Quantity);
 
         // Creating a flag for "can I continue fulfilling this order"
         bool canFufill = true;
@@ -161,8 +164,23 @@ public class FulfillmentService : IFulfillmentService
 
     public async Task<BurstResult> FulfillBurstAsync(IEnumerable<int> orderIds, CancellationToken ct)
     {
+        // Grabb all my orderIds
+        var idList = orderIds.ToList();
+
+        List<Order> orders; // place to store my orders
+
+        // Calling on a dbContext that we discard adter we're done
+        await using (var db = await _factory.CreateDbContextAsync(ct))
+        {
+            orders = await db.Orders.Where(o => idList.Contains(o.Id)).ToListAsync();
+        }
+
+        // Calling on our planning logic inside BurstPlanner
+        // planned contains our expedited/priority fist order
+        var planned = _planner.OrderbyPriority(orders);
+
         // we are just going to piggyback off of FulfillOneAsync - no need to rewrite logic we can just call it again
-        var tasks = orderIds.Select(id => FulfillOneAsync(id, ct)); // each call will get its own dbContext
+        var tasks = planned.Select(id => FulfillOneAsync(id, ct)); // each call will get its own dbContext
 
         // await here until all tasks in the collection are complete
         var results = await Task.WhenAll(tasks);

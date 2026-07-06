@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Warehouse.Data;
+namespace Warehouse.Data.Entities;
 
 public class Materials
 {

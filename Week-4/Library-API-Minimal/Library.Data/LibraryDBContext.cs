@@ -42,7 +42,7 @@ public class LibraryDBContext : DbContext
             e.HasIndex(p => p.Sku).IsUnique();
 
             // Setting the decimal places on Price
-            e.Property(p => p.Price).HasColumnType("decimal(10,2)"); 
+            e.Property(p => p.Price).HasColumnType("decimal(10,2)");
 
             // Setting the relationship
             e.HasOne(p=>p.Inventory)
