@@ -113,7 +113,7 @@ public class FulfillmentService : IFulfillmentService
     {
         // This is tha RowVersion Change Tracker entry retry from yesterday
         // Lets set max retries to 3 - by wrapping everything in a loop
-        for(int attemp = 0; ; attemp++)
+        while(true)
         {
             // Our loop as written never exists - its does increment attemp for us
             // If we retry and fail x amount of times - we will throw an exception manually
@@ -127,7 +127,7 @@ public class FulfillmentService : IFulfillmentService
             // We can tell our try catch how many times to handle this exception for us
             // After 3 attemps - we won't enter the catch. It bubbles up to whatever this method
             // was called 
-            catch (DbUpdateConcurrencyException ex) when (attemp < 3)
+            catch (DbUpdateConcurrencyException ex)
             {
                 // Retry Logic - remember that Change Tracker stuff?
                 // entry is an EF Core Change Tracker entry
