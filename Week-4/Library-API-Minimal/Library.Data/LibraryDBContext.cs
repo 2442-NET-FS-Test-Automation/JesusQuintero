@@ -61,9 +61,9 @@ public class LibraryDBContext : DbContext
         // After you've configured your entities (if you do any config in the override)
         // we can use OnModelCreating to seed data
         b.Entity<Product>().HasData(
-            new Product {Id = 1, Sku = "BK=001", Name = "Clean Code", Price = 32.00m},
-            new Product {Id = 2, Sku = "BK=002", Name = "The Pragmatic Programmer", Price = 38.00m},
-            new Product {Id = 3, Sku = "BK=003", Name = "Refactoring", Price = 45.00m}
+            new Product {Id = 1, Sku = "BK-001", Name = "Clean Code", Price = 32.00m},
+            new Product {Id = 2, Sku = "BK-002", Name = "The Pragmatic Programmer", Price = 38.00m},
+            new Product {Id = 3, Sku = "BK-003", Name = "Refactoring", Price = 45.00m}
         );
 
         b.Entity<InventoryItem>().HasData(

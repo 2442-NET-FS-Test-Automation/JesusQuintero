@@ -42,6 +42,7 @@ builder.Services.AddDbContextFactory<LibraryDBContext>(options => options.UseSql
 
 // Registered our custom service with the builder
 builder.Services.AddScoped<IFulfillmentService, FulfillmentService>();
+builder.Services.AddScoped<ISeeder, Seeder>();
 
 // Swagger stuff added to builder
 builder.Services.AddEndpointsApiExplorer();
@@ -238,6 +239,49 @@ app.MapPost("/orders", async (OrderPaylod orderRequest, IDbContextFactory<Librar
     return Results.Ok(new {orderId = newOrder.Id, result = result.ToString()});
 
 
+});
+
+// Burst endpoint
+// Forgoing creating a record - we will take these from a the query string
+// IHostApplicationLifetime - this lets us see events related to the app lifetime
+// We are going to use it to make sure we "flush" pending orders if the app is asked to stop
+app.MapPost("*/orders/burst", (int n, bool expedited, ISeeder seeder,
+            IServiceScopeFactory scopes, IHostApplicationLifetime lifetime) =>
+{
+    var ids = seeder.SeedOrders(n, expedited); // calling the seed orders method with the stuff from front end
+    var appStopping = lifetime.ApplicationStopping; // gives us a cancellation token that is called when app goes to shutdown
+
+    _ = Task.Run(async () =>
+    {
+        try
+        {
+            using var scope = scopes.CreateScope(); // ask for a fresh scope
+            var service = scope.ServiceProvider.GetRequiredService<IFulfillmentService>(); // grab a fulfillment service
+            await service.FulfillBurstAsync(ids, appStopping); // use it to call fulfillBusrstAsync()
+        }
+        catch (Exception ex)
+        {
+            // This task is fire and forget because we aren't awating or storing its result
+            // any exceptions would be "swallowed i.e. they would die with the task in the background
+            Log.Error( ex, "Burst fulfillment failed");
+            
+        }
+    }, appStopping);
+});
+
+
+app.MapGet("/verify/no-oversell", (LibraryDBContext db) =>
+{
+    var rows = db.Inventory.Include(i => i.Product).ToList(); // grab Inventory rows, include the product objects as well
+    var negative = rows.Where(i => i.CurrentStock < 0).ToList(); // grab items with negative stock
+    var fulfilled = db.fulfillmentEvents.Count(e => e.Type == "Fulfilled"); // count the fulfilled orders
+
+    return new
+    {
+        anyNegative = negative.Any(),
+        onHand = rows.Select(i => new {i.ProductId, i.CurrentStock}),
+        unitsFulfilled = fulfilled
+    };
 });
 
 
