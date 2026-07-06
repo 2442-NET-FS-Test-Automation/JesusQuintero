@@ -8,4 +8,5 @@ public class MaterialsByShipments
     public int Material_Id {get; set; }
     public Materials Material {get; set; } = default!;
     public int Quantity {get; set; }
+    public byte[] RowVersion {get; set; } = default!;
 }

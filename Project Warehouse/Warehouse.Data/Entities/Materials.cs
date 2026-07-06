@@ -7,4 +7,5 @@ public class Materials
     public string Material_Description {get; set; }
     public int Vendor_Id {get; set; }
     public Vendors vendor {get; set; } = default!;
+    public byte[] RowVersion {get; set; } = default!;
 }

@@ -7,4 +7,5 @@ public class MaterialMovements
     public Movements Movement {get; set; } = default!;
     public int Material_Id {get; set; }
     public Materials Material {get; set; } = default!;
+    public byte[] RowVersion {get; set; } = default!;
 }
