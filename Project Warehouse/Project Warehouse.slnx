@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Warehouse.api/">
+    <Project Path="Warehouse.api/Warehouse.API.csproj" />
+  </Folder>
+  <Folder Name="/Warehouse.data/">
+    <Project Path="Warehouse.data/Warehouse.Data.csproj" />
+  </Folder>
+</Solution>

@@ -17,7 +17,7 @@ public class Product
     public decimal Price {get; set; }
 
     // Below is an example of using a collection to denote a relationship
-    // A prodict has an inventory item, an inventory item is associated with one product
+    // A product has an inventory item, an inventory item is associated with one product
     // 1:1 relationship for now
     public InventoryItem? Inventory {get; set; } 
 }

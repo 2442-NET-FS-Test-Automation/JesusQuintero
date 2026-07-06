@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\DsaThreading.csproj": {}
+    "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\DsaThreading.csproj": {}
   },
   "projects": {
-    "c:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\DsaThreading.csproj": {
+    "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\DsaThreading.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\DsaThreading.csproj",
+        "projectUniqueName": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\DsaThreading.csproj",
         "projectName": "DsaThreading",
-        "projectPath": "c:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\DsaThreading.csproj",
+        "projectPath": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\DsaThreading.csproj",
         "packagesPath": "C:\\Users\\MasterDigimon\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\obj\\",
+        "outputPath": "C:\\Users\\MasterDigimon\\OneDrive\\Documentos\\Proyectos\\REVATURE TRAINING\\JesusQuintero\\Week-4\\dsa-demo\\DsaThreading\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\MasterDigimon\\AppData\\Roaming\\NuGet\\NuGet.Config"
