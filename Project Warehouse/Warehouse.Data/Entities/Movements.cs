@@ -14,8 +14,12 @@ public class Movements
     [Required]
     public DateTime Movement_Time {get; set; } = DateTime.Now;
     public int LastBinLocation_Id {get; set; }
+
     public Bins LastBinLocation {get; set; } = default!;
+
     public int NewBinLocation_Id {get; set; }
     public Bins NewBinLocation {get; set; } = default!;
+
+    public ICollection<MaterialMovements> MaterialMovements { get; set; } = default!;
 
 }

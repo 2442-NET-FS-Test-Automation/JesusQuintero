@@ -18,4 +18,6 @@ public class Users
 
     [Required]
     public string User_Password {get; set; }
+
+    public ICollection<Movements> Movements { get; set; } = default!;
 }

@@ -13,4 +13,7 @@ public class Bins
     public Locations Location {get; set; } = default!;
     [Required]
     public bool RealBin {get; set; } = false;
+
+    
+    public ICollection<LocatedMaterials> LocatedMaterials { get; set; } = default!;
 }

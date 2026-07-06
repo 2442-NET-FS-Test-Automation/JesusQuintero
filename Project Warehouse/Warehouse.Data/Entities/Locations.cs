@@ -11,4 +11,6 @@ public class Locations
     
     [Required, MaxLength(20)]
     public string Location_Name {get; set; }
+
+    public ICollection<Bins> Bins { get; set; } = default!;
 }

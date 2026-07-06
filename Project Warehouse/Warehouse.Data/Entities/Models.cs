@@ -13,4 +13,6 @@ public class Models
     [Required]
     public int New_Material_Id {get; set; }
     public Materials New_Material {get; set; } = default!;
+
+    public ICollection<MaterialsByModels> materialsByModels { get; set; } = default!;
 }

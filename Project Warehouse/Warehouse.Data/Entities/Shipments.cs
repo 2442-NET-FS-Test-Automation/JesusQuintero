@@ -21,4 +21,6 @@ public class Shipments
     [Required]
     public int Status {get; set; } = 0;
     public byte[] RowVersion {get; set; } = default!;
+
+    public ICollection<MaterialsByShipments> MaterialsByShipments { get; set; } = default!;
 }

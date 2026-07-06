@@ -12,4 +12,6 @@ public class Vendors
 
     [MaxLength(100)]
     public string Vendor_Email {get; set; }
+
+    public ICollection<Materials> Materials { get; set; } = default!;
 }

@@ -14,4 +14,6 @@ public class Customers
 
     [MaxLength(100)]
     public string Customer_Email {get; set; }
+
+    public ICollection<Shipments> Shipments { get; set; } = default!;
 }
