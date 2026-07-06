@@ -20,6 +20,8 @@ public class Movements
     public int NewBinLocation_Id {get; set; }
     public Bins NewBinLocation {get; set; } = default!;
 
+    public byte[] RowVersion {get; set; } = default!;
+
     public ICollection<MaterialMovements> MaterialMovements { get; set; } = default!;
 
 }

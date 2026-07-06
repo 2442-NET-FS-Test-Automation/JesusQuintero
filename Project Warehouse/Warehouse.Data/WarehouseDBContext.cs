@@ -112,8 +112,14 @@ public class WarehouseDBContext : DbContext
             .HasForeignKey(s => s.Customer_Id);
 
 
-        // Setting RowVersion's
-        
+        // Setting RowVersion's property
+        b.Entity<LocatedMaterials>().Property(i => i.RowVersion).IsRowVersion();
+        b.Entity<MaterialMovements>().Property(i => i.RowVersion).IsRowVersion();
+        b.Entity<Materials>().Property(i => i.RowVersion).IsRowVersion();
+        b.Entity<MaterialsByShipments>().Property(i => i.RowVersion).IsRowVersion();
+        b.Entity<Movements>().Property(i => i.RowVersion).IsRowVersion();
+        b.Entity<Shipments>().Property(i => i.RowVersion).IsRowVersion();
+
                         
         
         
