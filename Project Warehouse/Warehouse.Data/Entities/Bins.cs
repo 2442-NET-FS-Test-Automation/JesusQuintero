@@ -8,6 +8,7 @@ public class Bins
 {
     [Key]
     public int Bin_Id {get; set; }
+    public string Bin_Name {get; set;} = "";
     [Required]
     public int Location_Id {get; set; }
     public Locations Location {get; set; } = default!;
