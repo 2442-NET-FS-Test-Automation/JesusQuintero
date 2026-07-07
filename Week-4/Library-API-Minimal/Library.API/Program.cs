@@ -190,7 +190,7 @@ app.MapGet("peek/conflict", (IServiceScopeFactory scopes) =>
 
 // Endpoint to reset the stock of the items in my catalog - useful for testing and demo
 // might need to hit this endpoint while we work
-app.MapPost("/inventory/rest", (LibraryDBContext db, ILogger<Program> logger) =>
+app.MapPost("/inventory/reset", (LibraryDBContext db, ILogger<Program> logger) =>
 {
     // We just ask for an ILogger loke we do our DBContext
     // then use it as normal

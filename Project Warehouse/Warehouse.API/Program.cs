@@ -2,6 +2,7 @@ using Warehouse.Data;
 using Warehouse.Data.Entities;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,17 +31,42 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapPost("/Reset-Transactions", async (WarehouseDBContext db, ILogger<Program> logger) =>
+{
+    logger.LogInformation("Starting to delete records");
+    int deletedRecords =  0;
+    deletedRecords += await db.Movements.ExecuteDeleteAsync();
+    deletedRecords += await db.LocatedMaterials.ExecuteDeleteAsync();
+    deletedRecords += await db.Shipments.ExecuteDeleteAsync();
+
+    logger.LogInformation("{deletedRecors records deleted}", deletedRecords);
+    return Results.Ok(new {message = $"{deletedRecords} records deleted"});
+});
+
 app.MapGet("/list/materials", async (WarehouseDBContext db) =>
 {
-    await db.Materials.ToListAsync();
+    return await db.Materials.ToListAsync();
 });
 app.MapGet("/list/users", async (WarehouseDBContext db) =>
 {
-    await db.Users.ToListAsync();
+    return await db.Users.ToListAsync();
 });
 app.MapGet("/list/locations", async (WarehouseDBContext db) =>
 {
-    await db.Locations.Include(l => l.Bins).ToListAsync();
+    return await db.Locations
+        .Select(l => new 
+        {
+            l.Location_Id,
+            l.Location_Name,
+            Bins = l.Bins.Select(b => new {b.Bin_Id, b.Bin_Name, b.RealBin})
+        })
+        .ToListAsync();
+    
+});
+
+app.MapPost("/Add-Stock", async (WarehouseDBContext db, int idMaterial, string bin_Name, int quantity) =>
+{
+    
 });
 
 app.Run();
