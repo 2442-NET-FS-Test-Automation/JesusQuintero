@@ -38,33 +38,39 @@ public class WarehouseDBContext : DbContext
         
         b.Entity<Movements>().HasOne(m => m.LastBinLocation)
                              .WithMany()
-                             .HasForeignKey(m => m.LastBinLocation_Id);
+                             .HasForeignKey(m => m.LastBinLocation_Id)
+                             .OnDelete(DeleteBehavior.NoAction);
         
         b.Entity<Movements>().HasOne(m => m.NewBinLocation)
                              .WithMany()
-                             .HasForeignKey(m => m.NewBinLocation_Id);
+                             .HasForeignKey(m => m.NewBinLocation_Id)
+                             .OnDelete(DeleteBehavior.NoAction);
 
 
         //MaterialMovements relations
         b.Entity<MaterialMovements>().HasOne(mm => mm.Movement)
                                      .WithMany(m => m.MaterialMovements)
-                                     .HasForeignKey(mm => mm.Movement_Id);
+                                     .HasForeignKey(mm => mm.Movement_Id)
+                                    .OnDelete(DeleteBehavior.NoAction);
                                      
         b.Entity<MaterialMovements>().HasOne(mm => mm.Material)
                                      .WithMany(m => m.MaterialMovements)
-                                     .HasForeignKey(mm => mm.Material_Id);
+                                     .HasForeignKey(mm => mm.Material_Id)
+                                     .OnDelete(DeleteBehavior.NoAction);
 
         
         // LocatedMaterials relations
         b.Entity<LocatedMaterials>()
             .HasOne(lm => lm.Material)
             .WithMany(m => m.LocatedMaterials)
-            .HasForeignKey(lm => lm.Material_Id);
+            .HasForeignKey(lm => lm.Material_Id)
+            .OnDelete(DeleteBehavior.NoAction);
         
         b.Entity<LocatedMaterials>()
             .HasOne(lm => lm.Bin)
             .WithMany(b => b.LocatedMaterials)
-            .HasForeignKey(lm => lm.Bin_Id);
+            .HasForeignKey(lm => lm.Bin_Id)
+            .OnDelete(DeleteBehavior.NoAction);
 
         
         // Materials relations
@@ -85,24 +91,28 @@ public class WarehouseDBContext : DbContext
         b.Entity<MaterialsByModels>()
             .HasOne(mm => mm.Material)
             .WithMany(m => m.MaterialsByModels)
-            .HasForeignKey(mm => mm.Material_Id);
+            .HasForeignKey(mm => mm.Material_Id)
+            .OnDelete(DeleteBehavior.NoAction);
         
         b.Entity<MaterialsByModels>()
             .HasOne(mm => mm.model)
             .WithMany(m => m.materialsByModels)
-            .HasForeignKey(mm => mm.Model_Id);
+            .HasForeignKey(mm => mm.Model_Id)
+            .OnDelete(DeleteBehavior.NoAction);
         
 
         // MaterialsByShimpent relations
         b.Entity<MaterialsByShipments>()
             .HasOne(ms => ms.Material)
             .WithMany(m => m.MaterialsByShipments)
-            .HasForeignKey(ms => ms.Material_Id);
+            .HasForeignKey(ms => ms.Material_Id)
+            .OnDelete(DeleteBehavior.NoAction);
         
         b.Entity<MaterialsByShipments>()
             .HasOne(ms => ms.Shipment)
             .WithMany(s => s.MaterialsByShipments)
-            .HasForeignKey(ms => ms.Shipment_Id);
+            .HasForeignKey(ms => ms.Shipment_Id)
+            .OnDelete(DeleteBehavior.NoAction);
         
 
         // Shipments relations

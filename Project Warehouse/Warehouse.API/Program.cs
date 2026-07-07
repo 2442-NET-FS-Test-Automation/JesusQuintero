@@ -7,6 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 var conn_string = "Server=localhost,1433;Database=WarehouseProject;User Id=sa;Password=LibraryPass1!;TrustServerCertificate=true";
 
+builder.Services.AddDbContext<WarehouseDBContext>(options => options.UseSqlServer(conn_string),
+        ServiceLifetime.Scoped, ServiceLifetime.Singleton);
+
+builder.Services.AddDbContextFactory<WarehouseDBContext>(options => options.UseSqlServer(conn_string));
+
 Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()  
             .WriteTo.File("logs/fulfilment-log-.log", rollingInterval: RollingInterval.Day)

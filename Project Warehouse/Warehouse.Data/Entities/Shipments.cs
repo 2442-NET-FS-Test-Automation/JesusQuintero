@@ -16,7 +16,7 @@ public class Shipments
     public DateOnly Shipment_Date {get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     [Required, Range(.1, float.MaxValue), Precision(10,2)]
-    public float Sale_Price {get; set; }
+    public decimal Sale_Price {get; set; }
 
     [Required]
     public int Status {get; set; } = 0;
