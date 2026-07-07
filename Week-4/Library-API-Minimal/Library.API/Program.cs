@@ -45,6 +45,7 @@ builder.Services.AddDbContextFactory<LibraryDBContext>(options => options.UseSql
 builder.Services.AddScoped<IFulfillmentService, FulfillmentService>();
 builder.Services.AddScoped<ISeeder, Seeder>();
 builder.Services.AddScoped<BurstPlanner>(); // Adding our BurstPlanner, will be used in FulfillmentService
+builder.Services.AddScoped<OrderFactory>();
 
 // Swagger stuff added to builder
 builder.Services.AddEndpointsApiExplorer();
@@ -108,6 +109,15 @@ app.MapGet("/peek/tracking", (LibraryDBContext db) =>
 
 
     return states;
+});
+
+// Peek - Loading strategies
+app.MapGet("/peek/loading", (LibraryDBContext db) =>
+{
+    Product product = db.Products.First(); // grab the first product from DB table
+    // Explicit loading via Load()
+    db.Entry(product).Reference(p => p.Inventory).Load(); // making another trip to the database to populate the property
+
 });
 
 
@@ -337,10 +347,55 @@ app.MapGet("/reports/top-products", (LibraryDBContext db) =>
     return ranked;
 });
 
+// Binary search on the sorted result
+app.MapGet("/reports/rank-of/{units:int}", (int units, LibraryDBContext db) =>
+{
+    // Find product ranking that sold x units
+    var unitsDesc = db.fulfillmentEvents
+        .Where(e => e.Type == "Fulfilled")
+        .Join(db.OrderLine, e =>e.OrderId, l=> l.OrderId, (e, l) => l)
+        .GroupBy(l => l.ProductId)
+        .Select(g => g.Sum(l => l.Quantity))
+        .OrderByDescending(u => u)
+        .ToArray();
 
+    
+    // sorted DESC => using Binary Search to find the index of a specific quantity sold
+    // 1000, 400, 330, 34
+    // Our BinarySearch needs a comparer - for something like an int or a char this is easy
+    // if you want to do this custom classes - you need to override CompareTo loke we do ToString
+    var index = Array.BinarySearch(unitsDesc, units, Comparer<int>.Create((a, b) => b.CompareTo(a)));
+    return new {units, rank = index >= 0 ? index + 1 : -1}; // If BinarySearch doesn't find a thing - it returns some bitwise
+    // complement or something - we collapse it to -1
+});
+
+app.MapPost("/orders-with-factory", async (OrderRequest req, OrderFactory factory,
+            IDbContextFactory<LibraryDBContext> dbf, CancellationToken ct) =>
+{
+    try
+    {
+        Order newOrder = factory.CreateOrder(req.Kind, req.CustomerId,
+                req.Lines.Select(l => (l.Sku, l.Qty)));
+        
+        await using var db = await dbf.CreateDbContextAsync(ct);
+
+        db.Orders.Add(newOrder);
+
+        await db.SaveChangesAsync();
+
+        return Results.Created($"/orders/{newOrder.Id}", new {newOrder.Id});
+    }
+    catch(UnknownSkuException ex)
+    {
+        Log.Warning("Rejected order: unknown SKU {Sku}", ex.Sku);
+        return Results.BadRequest(new {error = ex.Message, sku = ex.Sku});
+    }
+});
 
 // My file always ends with app.Run() - minimal API or Controller API
 app.Run();
 
 Log.CloseAndFlush();
 public record OrderPaylod(int ProductId, int Quantity, int CustomerId);
+public record OrderLineRequest(string Sku, int Qty);
+public record OrderRequest(string Kind, int CustomerId, List<OrderLineRequest> Lines);

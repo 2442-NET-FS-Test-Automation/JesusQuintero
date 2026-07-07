@@ -1,12 +1,11 @@
 // This class will hold the business logic/db retry logic fot fulfilling transactions
 
 using System.Data;
-using System.Runtime.InteropServices;
 using Library.Data;
 using Library.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using Serilog;
+using System.Collections.Concurrent;
 
 namespace Library.Api.Fulfillment;
 
@@ -17,6 +16,7 @@ public interface IFulfillmentService
 {
     public Task<FulfillmentResult> FulfillOneAsync(int orderId, CancellationToken ct);
     public Task<BurstResult> FulfillBurstAsync(IEnumerable<int> orderIds, CancellationToken ct);
+    public int ResolveProductId(string sku);
 }
 
 // Im going to stick everything about order fulfillment in this file
@@ -34,12 +34,27 @@ public class FulfillmentService : IFulfillmentService
     // we DO NOT instantiate one here, we ask for one via the Constructor
     private readonly IDbContextFactory<LibraryDBContext> _factory; // holds my factory
     private readonly BurstPlanner _planner; // holds my BusrtPlanner object
+    private readonly ConcurrentDictionary<string, int> _skuToProductId;
     
     // The factory in the constructor arguments list comes from the ASP.NET DI Container
     public FulfillmentService(IDbContextFactory<LibraryDBContext> factory, BurstPlanner planner)
     {
         _factory = factory;
         _planner = planner;
+
+        // Storing skus and their product Id's so we can do 0(1) lookup if we need it later
+        using var db = _factory.CreateDbContext();
+        _skuToProductId = new ConcurrentDictionary<string, int>(
+            db.Products.ToDictionary(p => p.Sku, p => p.Id)
+        );
+    }
+
+    // Mtehod to resolve Skus to productId using that dictionary
+    public int ResolveProductId(string sku)
+    {
+        try{ return _skuToProductId[sku]; }
+        catch ( KeyNotFoundException) {throw new UnknownSkuException(sku);}
+        
     }
 
     // This method is going to handle filfillment - its gonna be a bit long. Wich is why we didn't
@@ -132,6 +147,7 @@ public class FulfillmentService : IFulfillmentService
             // was called 
             catch (DbUpdateConcurrencyException ex)
             {
+                Log.Warning("Attempting retry");
                 // Retry Logic - remember that Change Tracker stuff?
                 // entry is an EF Core Change Tracker entry
                 foreach( var entry in ex.Entries)
