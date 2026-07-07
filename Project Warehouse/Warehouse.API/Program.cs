@@ -27,6 +27,20 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapGet("/list/materials", async (WarehouseDBContext db) =>
+{
+    await db.Materials.ToListAsync();
+});
+app.MapGet("/list/users", async (WarehouseDBContext db) =>
+{
+    await db.Users.ToListAsync();
+});
+app.MapGet("/list/locations", async (WarehouseDBContext db) =>
+{
+    await db.Locations.Include(l => l.Bins).ToListAsync();
+});
 
 app.Run();
