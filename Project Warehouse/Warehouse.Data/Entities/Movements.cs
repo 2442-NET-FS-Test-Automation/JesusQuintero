@@ -22,6 +22,6 @@ public class Movements
 
     public byte[] RowVersion {get; set; } = default!;
 
-    public ICollection<MaterialMovements> MaterialMovements { get; set; } = default!;
+    public List<MaterialMovements> MaterialMovements { get; set; } = default!;
 
 }

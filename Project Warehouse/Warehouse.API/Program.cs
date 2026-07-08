@@ -24,6 +24,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+builder.Services.AddScoped<IWarehouseFactory, WarehouseFactory>();
 
 
 var app = builder.Build();
@@ -64,7 +65,7 @@ app.MapGet("/list/locations", async (WarehouseDBContext db) =>
     
 });
 
-app.MapPost("/Add-Stock", async (WarehouseDBContext db, int idMaterial, string bin_Name, int quantity) =>
+app.MapPost("/Add-Stock", (WarehouseDBContext db, int idMaterial, string bin_Name, int quantity) =>
 {
     
 });

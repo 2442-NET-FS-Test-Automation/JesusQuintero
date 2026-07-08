@@ -19,5 +19,8 @@ public class MaterialMovements
 
     public Materials Material {get; set; } = default!;
 
+    [Required]
+    public decimal Quantity {get; set; }
+
     public byte[] RowVersion {get; set; } = default!;
 }
