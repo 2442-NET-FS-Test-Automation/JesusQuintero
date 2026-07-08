@@ -1,3 +1,5 @@
+using Library.ControllerApi.Mapping;
+using Library.ControllerApi.Services;
 using Library.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,10 @@ builder.Services.AddDbContextFactory<LibraryDBContext>(o => o.UseSqlServer(conn_
 
 // Registering oir custom Repo and Service Layer methods like we did before
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>(); // Could later swap for inventpryMongoRepo
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+
+// Adding out mapping profile for AutoMapper
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfile).Assembly));
 
 
 // Add services to the container.

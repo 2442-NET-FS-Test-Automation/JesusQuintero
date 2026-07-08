@@ -31,7 +31,7 @@ public class InventoryRepository : IInventoryRepository
     }
 
     // Get an item by it's SKU
-    public async Task<InventoryItem?> GetInventoryItemBySku(string sku)
+    public async Task<InventoryItem?> GetInventoryItemBySkuAsync(string sku)
     {
         await using var db = await _factory.CreateDbContextAsync();
         return await db.Inventory.Include(i => i.Product).FirstOrDefaultAsync(i => i.Product.Sku == sku);

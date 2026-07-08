@@ -1,3 +1,6 @@
+using AutoMapper;
+using Library.ControllerApi.DTOs;
+using Library.ControllerApi.Services;
 using Library.Data;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc; // ControllerBase lives here
@@ -7,67 +10,86 @@ using Microsoft.AspNetCore.Mvc; // ControllerBase lives here
 public class InventoryController : ControllerBase
 {
     // This will be removed tomorrow for sure
-    private readonly IInventoryRepository _repo;
+    private readonly IInventoryService _service;
 
-    public InventoryController(IInventoryRepository repo)
+
+    private readonly IMapper _mapper;
+
+    public InventoryController(IInventoryService service, IMapper mapper)
     {
-        _repo = repo;
+        _service = service;
+        _mapper = mapper;
     }
 
     // Lets write our first GET endpoint
     [HttpGet] // IActionResult just represents possible HTTP response actions
-    public async Task<ActionResult<InventoryReturnDTO>> Get()
+    public async Task<ActionResult<IEnumerable<InventoryDto>>> Get()
     {
-        // As is this creeates infinite loop when we try to serialize to JSON
-        // return Ok(await _repo.GetAllAsync());
+        var items = await _service.AllAsync();
 
-        // The fix is using DTO - Data Transfer Object. In general, ot is bad practice
-        // to send models as returns (or take them as arguments) to/from controller methods
-        // Models are for your API, not for the front end
-        var items = await _repo.GetAllAsync(); // Get all items
+        var mappedItems = _mapper.Map<List<InventoryDto>>(items);
 
-        // This is what we will send back once we populate it
-        EntireInventoryDTO response = new();
+        return Ok(mappedItems);
+        
 
-        // Now we need to map to those DTOs 
-        foreach(var item in items)
-        {
-            // Creating an inventoryReturnDTO
-            InventoryReturnDTO i = new InventoryReturnDTO
-            {
-                Name = item.Product.Name,
-                Sku = item.Product.Sku,
-                CurrentStock = item.CurrentStock
-            };
+        // // As is this creeates infinite loop when we try to serialize to JSON
+        // // return Ok(await _repo.GetAllAsync());
 
-            // To then populate the EntireInventoryDTO
-            response.EntireInventory.Add(i);
-        }
+        // // The fix is using DTO - Data Transfer Object. In general, ot is bad practice
+        // // to send models as returns (or take them as arguments) to/from controller methods
+        // // Models are for your API, not for the front end
+        // var items = await _repo.GetAllAsync(); // Get all items
 
-        // Returning the EntireInventoryDTO response
-        return Ok(response);
+        // // This is what we will send back once we populate it
+        // EntireInventoryDTO response = new();
+
+        // // Now we need to map to those DTOs 
+        // foreach(var item in items)
+        // {
+        //     // Creating an inventoryReturnDTO
+        //     InventoryReturnDTO i = new InventoryReturnDTO
+        //     {
+        //         Name = item.Product.Name,
+        //         Sku = item.Product.Sku,
+        //         CurrentStock = item.CurrentStock
+        //     };
+
+        //     // To then populate the EntireInventoryDTO
+        //     response.EntireInventory.Add(i);
+        // }
+
+        // // Returning the EntireInventoryDTO response
+        // return Ok(response);
     }
 
     // localhost:5090/api/Inventory/{sku} - sku is passed in by the iser
     // We can add routing info right on the annotation
     [HttpGet("{sku}")]
-    public async Task<ActionResult<InventoryReturnDTO>> GetBySku(string sku)
+    public async Task<ActionResult<InventoryDto>> GetBySku(string sku)
     {
-        var item = await _repo.GetInventoryItemBySku(sku);
+        var item = await _service.BySkuAsync(sku);
 
-        // Then we check what to return based on item being null or not
-        // Returns 404 if not found
-        if(item is null) return NotFound();
+        if (item is null) return NotFound(); // 404 not found
 
-        var response = new InventoryReturnDTO
-        {
-            Name = item.Product.Name,
-            Sku = item.Product.Sku,
-            CurrentStock = item.CurrentStock
-        };
+        var mappedItems = _mapper.Map<InventoryDto>(item);
+
+        return Ok(mappedItems);
+
+        // var item = await _repo.GetInventoryItemBySkuAsync(sku);
+
+        // // Then we check what to return based on item being null or not
+        // // Returns 404 if not found
+        // if(item is null) return NotFound();
+
+        // var response = new InventoryReturnDTO
+        // {
+        //     Name = item.Product.Name,
+        //     Sku = item.Product.Sku,
+        //     CurrentStock = item.CurrentStock
+        // };
 
         
 
-        return Ok(response); // 200 - found something - sent back to front end
+        // return Ok(response); // 200 - found something - sent back to front end
     }
 }
