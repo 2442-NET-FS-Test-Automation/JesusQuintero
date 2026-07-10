@@ -1,8 +1,14 @@
 using Warehouse.Data;
 using Warehouse.Data.Entities;
+using Warehouse.Data.Services;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Warehouse.Data.Records;
+using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Diagnostics;
+using Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +31,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddScoped<IWarehouseFactory, WarehouseFactory>();
+builder.Services.AddScoped<IBinInventoryService, BinInventoryService>();
 
 
 var app = builder.Build();
@@ -36,8 +43,10 @@ app.MapPost("/Reset-Transactions", async (WarehouseDBContext db, ILogger<Program
 {
     logger.LogInformation("Starting to delete records");
     int deletedRecords =  0;
+    deletedRecords += await db.MaterialMovements.ExecuteDeleteAsync();
     deletedRecords += await db.Movements.ExecuteDeleteAsync();
     deletedRecords += await db.LocatedMaterials.ExecuteDeleteAsync();
+    deletedRecords += await db.MaterialsByShipments.ExecuteDeleteAsync();
     deletedRecords += await db.Shipments.ExecuteDeleteAsync();
 
     logger.LogInformation("{deletedRecors records deleted}", deletedRecords);
@@ -64,10 +73,129 @@ app.MapGet("/list/locations", async (WarehouseDBContext db) =>
         .ToListAsync();
     
 });
-
-app.MapPost("/Add-Stock", (WarehouseDBContext db, int idMaterial, string bin_Name, int quantity) =>
+app.MapGet("/list/Movements", async (WarehouseDBContext db) =>
 {
+    return await db.Movements
+        .Select(m => new 
+        {
+            m.Movement_Id,
+            m.User_Id,
+            m.LastBinLocation_Id,
+            m.NewBinLocation_Id,
+            m.Movement_Time,
+            MaterialMovements = m.MaterialMovements.Select(mm => new {mm.Material_Id, mm.Quantity})
+        })
+        .ToListAsync();
+    
+});
+app.MapGet("/list/BinMaterials/{bin}", async (WarehouseDBContext db, int bin) =>
+{
+    return await db.LocatedMaterials
+        .Where(l => l.Bin_Id == bin)
+        .Select(l => new 
+        {
+            l.Material_Id,
+            l.Quantity        
+        }).ToListAsync();
     
 });
 
+app.MapGet("/list/Shipments", async (WarehouseDBContext db) =>
+{
+    return await db.Shipments
+        .Select(s => new 
+        {
+            s.Shipment_Id,
+            s.Sale_Price,
+            s.Shipment_Date,
+            s.Customer_Id,
+            MaterialsByShipments = s.MaterialsByShipments.Select(mm => new {mm.Material_Id, mm.Quantity})
+        })
+        .ToListAsync();
+});
+
+app.MapPost("/Add-Stock", async (WarehouseDBContext db, EntryMaterialDto materials, IWarehouseFactory factory) =>
+{
+    Movements newEntry = factory.MakeMovement(MovementTypes.Entry, materials.materials, materials.userId, toBin:materials.toBin);
+
+    db.Movements.Add(newEntry);
+
+    foreach(MaterialMovementDto mat in materials.materials)
+    {
+        LocatedMaterials? loc = await db.LocatedMaterials.FirstOrDefaultAsync(l => l.Bin_Id == materials.toBin && l.Material_Id == mat.idMaterial);
+        if (loc == null)
+        {
+            loc = new LocatedMaterials { Bin_Id =  materials.toBin, Material_Id = mat.idMaterial, Quantity = mat.quantity};
+            db.LocatedMaterials.Add(loc);
+        }
+        else
+        {
+            loc.Quantity += mat.quantity;
+        }
+    }
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/movements/{newEntry.Movement_Id}", new {newEntry.Movement_Id});
+});
+
+app.MapPost("/Move-Stock", async (WarehouseDBContext db, MoveMaterialDto materials, IWarehouseFactory factory, IBinInventoryService invService) =>
+{
+
+    try
+    {
+        await invService.ReduceBinInventory(db,materials.fromBin, materials.materials);
+        await invService.AddBinInventory(db,materials.toBin,materials.materials);
+
+        Movements newEntry = factory.MakeMovement(MovementTypes.Movement, materials.materials, materials.userId, materials.fromBin ,materials.toBin);
+
+        db.Movements.Add(newEntry);
+
+        await db.SaveChangesAsync();
+        
+        return Results.Ok();
+    }
+    catch(InsufficientStockException ex)
+    {
+        return Results.BadRequest(new {message = ex.Message});
+    }
+
+});
+
+app.MapPost("/Make-Shipment", async (WarehouseDBContext db, ShipMaterialDto materials, IWarehouseFactory factory, 
+                                    IBinInventoryService invService, decimal price, int customerId) =>
+{
+
+    try
+    {
+        await invService.ReduceBinInventory(db,materials.fromBin, materials.materials);
+
+        Movements newEntry = factory.MakeMovement(MovementTypes.Shipment, materials.materials, materials.userId, materials.fromBin);
+        db.Movements.Add(newEntry);
+        await factory.MakeShipment(db, materials.materials, customerId, price);
+
+        await db.SaveChangesAsync();
+        
+        return Results.Ok();
+    }
+    catch(InsufficientStockException ex)
+    {
+        return Results.BadRequest(new {message = ex.Message});
+    }
+
+});
+
+app.MapPost("/Burst-Movements-Priority", async (WarehouseDBContext db, IWarehouseFactory factory, 
+                                    IBinInventoryService invService, int numberOfMovements) =>
+{
+    PriorityQueue<GenericMaterialMovementDto, int> myMovements = await factory.GenerateBurst(numberOfMovements);
+    Stopwatch sw = new Stopwatch();
+    sw.Start();
+    BurstResult br = await factory.RunSecuentialBurst(db, factory, invService, myMovements);
+    sw.Stop();
+    Log.Information("Execution time from burst {}", sw.ElapsedMilliseconds);
+    return Results.Ok();
+});
+
+
 app.Run();
+
