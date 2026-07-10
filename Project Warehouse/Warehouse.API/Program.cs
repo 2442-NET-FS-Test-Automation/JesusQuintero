@@ -41,7 +41,7 @@ app.UseSwaggerUI();
 
 app.MapPost("/Reset-Transactions", async (WarehouseDBContext db, ILogger<Program> logger) =>
 {
-    logger.LogInformation("Starting to delete records");
+    logger.LogWarning("Deleting operation records");
     int deletedRecords =  0;
     deletedRecords += await db.MaterialMovements.ExecuteDeleteAsync();
     deletedRecords += await db.Movements.ExecuteDeleteAsync();
@@ -55,14 +55,17 @@ app.MapPost("/Reset-Transactions", async (WarehouseDBContext db, ILogger<Program
 
 app.MapGet("/list/materials", async (WarehouseDBContext db) =>
 {
+    Log.Information("Getting materials information");
     return await db.Materials.ToListAsync();
 });
 app.MapGet("/list/users", async (WarehouseDBContext db) =>
 {
+    Log.Information("Getting users information");
     return await db.Users.ToListAsync();
 });
 app.MapGet("/list/locations", async (WarehouseDBContext db) =>
 {
+    Log.Information("Getting locations information");
     return await db.Locations
         .Select(l => new 
         {
@@ -75,6 +78,7 @@ app.MapGet("/list/locations", async (WarehouseDBContext db) =>
 });
 app.MapGet("/list/Movements", async (WarehouseDBContext db) =>
 {
+    Log.Information("Getting Movements information");
     return await db.Movements
         .Select(m => new 
         {
@@ -90,6 +94,7 @@ app.MapGet("/list/Movements", async (WarehouseDBContext db) =>
 });
 app.MapGet("/list/BinMaterials/{bin}", async (WarehouseDBContext db, int bin) =>
 {
+    Log.Information("Getting bin {bin} information", bin);
     return await db.LocatedMaterials
         .Where(l => l.Bin_Id == bin)
         .Select(l => new 
@@ -102,6 +107,7 @@ app.MapGet("/list/BinMaterials/{bin}", async (WarehouseDBContext db, int bin) =>
 
 app.MapGet("/list/Shipments", async (WarehouseDBContext db) =>
 {
+    Log.Information("Getting shipment information");
     return await db.Shipments
         .Select(s => new 
         {
@@ -133,6 +139,7 @@ app.MapPost("/Add-Stock", async (WarehouseDBContext db, EntryMaterialDto materia
             loc.Quantity += mat.quantity;
         }
     }
+    Log.Information("Entry processed succesfully");
     await db.SaveChangesAsync();
 
     return Results.Created($"/movements/{newEntry.Movement_Id}", new {newEntry.Movement_Id});
@@ -149,7 +156,7 @@ app.MapPost("/Move-Stock", async (WarehouseDBContext db, MoveMaterialDto materia
         Movements newEntry = factory.MakeMovement(MovementTypes.Movement, materials.materials, materials.userId, materials.fromBin ,materials.toBin);
 
         db.Movements.Add(newEntry);
-
+        Log.Information("Movement processed succesfully");
         await db.SaveChangesAsync();
         
         return Results.Ok();
@@ -172,19 +179,19 @@ app.MapPost("/Make-Shipment", async (WarehouseDBContext db, ShipMaterialDto mate
         Movements newEntry = factory.MakeMovement(MovementTypes.Shipment, materials.materials, materials.userId, materials.fromBin);
         db.Movements.Add(newEntry);
         await factory.MakeShipment(db, materials.materials, customerId, price);
-
+        Log.Information("Shipment processed succesfully");
         await db.SaveChangesAsync();
         
         return Results.Ok();
     }
-    catch(InsufficientStockException ex)
+    catch(AggregateException ex) when (ex.InnerExceptions.Any(e => e is InsufficientStockException))
     {
         return Results.BadRequest(new {message = ex.Message});
     }
 
 });
 
-app.MapPost("/Burst-Movements-Priority", async (WarehouseDBContext db, IWarehouseFactory factory, 
+app.MapPost("/Burst/Movements-Priority", async (WarehouseDBContext db, IWarehouseFactory factory, 
                                     IBinInventoryService invService, int numberOfMovements) =>
 {
     PriorityQueue<GenericMaterialMovementDto, int> myMovements = await factory.GenerateBurst(numberOfMovements);
@@ -199,7 +206,11 @@ app.MapPost("/Burst-Movements-Priority", async (WarehouseDBContext db, IWarehous
     Log.Information("Failed Movemnt: {fMov}", br.failMovements);
     Log.Information("Failed Shipment: {fShip}", br.failShipments);
     Log.Information("Execution time from burst {time}", sw.ElapsedMilliseconds);
-    return Results.Ok();
+    string oKMessage = $"Succesfull Operations: Entry-{br.compEntries}, Movement-{br.compMovements}, Shipment-{br.compShipments}";
+    oKMessage += $"\nFailed Operations:  Movement-{br.failMovements}, Shipment-{br.failShipments}";
+    oKMessage += $"\nExecution time from burst {sw.ElapsedMilliseconds}";
+
+    return Results.Ok(oKMessage);
 });
 
 
