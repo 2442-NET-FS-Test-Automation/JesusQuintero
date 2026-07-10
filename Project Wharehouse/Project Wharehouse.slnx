@@ -1,8 +1,0 @@
-<Solution>
-  <Folder Name="/Wharehouse.api/">
-    <Project Path="Wharehouse.api/Wharehouse.API.csproj" />
-  </Folder>
-  <Folder Name="/Wharehouse.data/">
-    <Project Path="Wharehouse.data/Wharehouse.Data.csproj" />
-  </Folder>
-</Solution>
