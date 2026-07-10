@@ -45,13 +45,13 @@ Enpoint that generates a given number of movements to be processed, stores it in
 
 
 <h2> Use of Technologies </h2>
-- Use of EF Core model + migrations + seed data against SQL Server in Docker, DbContext in DI.
-- Minipal API endpoints (Get and Set) with different functionalitys
-- Managing Burst fuction with task and concurrent collections, with every task with teir own dbcontext, and one transaction per order guaranted by a RowVersion.
-- Burst funcion run in background with task, making the API responsive during their execution
-- Serilog structured logging.
-- Executing transactions with priority via PriorityQueue
-- Function to reset transactions
-- Benchmark of burst process logging the correspondin execution time
-- ConcurrentDictionary lookups at stock checks
-- Custom exception that carries data
+- Use of EF Core model + migrations + seed data against SQL Server in Docker, DbContext in DI.<br>
+- Minipal API endpoints (Get and Set) with different functionalitys.<br>
+- Managing Burst fuction with task and concurrent collections, with every task with teir own dbcontext, and one transaction per order guaranted by a RowVersion.<br>
+- Burst funcion run in background with task, making the API responsive during their execution.<br>
+- Serilog structured logging.<br>
+- Executing transactions with priority via PriorityQueue.<br>
+- Function to reset transactions.<br>
+- Benchmark of burst process logging the correspondin execution time.<br>
+- ConcurrentDictionary lookups at stock checks.<br>
+- Custom exception that carries data.<br>
