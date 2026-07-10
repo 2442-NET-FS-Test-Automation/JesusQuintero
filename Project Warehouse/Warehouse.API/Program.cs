@@ -192,7 +192,13 @@ app.MapPost("/Burst-Movements-Priority", async (WarehouseDBContext db, IWarehous
     sw.Start();
     BurstResult br = await factory.RunSecuentialBurst(db, factory, invService, myMovements);
     sw.Stop();
-    Log.Information("Execution time from burst {}", sw.ElapsedMilliseconds);
+    await db.SaveChangesAsync();
+    Log.Information("Succesfull Entry: {sEntry}", br.compEntries);
+    Log.Information("Succesfull Movement: {sMov}", br.compMovements);
+    Log.Information("Succesfull Shipment: {sShip}", br.compShipments);
+    Log.Information("Failed Movemnt: {fMov}", br.failMovements);
+    Log.Information("Failed Shipment: {fShip}", br.failShipments);
+    Log.Information("Execution time from burst {time}", sw.ElapsedMilliseconds);
     return Results.Ok();
 });
 

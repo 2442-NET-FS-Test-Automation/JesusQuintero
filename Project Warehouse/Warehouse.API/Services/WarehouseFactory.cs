@@ -2,6 +2,7 @@ using Warehouse.Data.Records;
 using Warehouse.Data.Entities;
 using System.Collections.Concurrent;
 using System.Data.Common;
+using Serilog;
 
 namespace Warehouse.Data.Services;
 
@@ -117,12 +118,12 @@ public class WarehouseFactory : IWarehouseFactory
                 break;
                 case 2:
                     GenericMaterialMovementDto newMov = 
-                            new GenericMaterialMovementDto(MovementTypes.Entry, mm, r.Next(1,3), r.Next(1,6), r.Next(1,6));
+                            new GenericMaterialMovementDto(MovementTypes.Movement, mm, r.Next(1,3), r.Next(1,6), r.Next(1,6));
                         temp.Add(( newMov,2));
                 break;
                 case 3:
                 GenericMaterialMovementDto newShip = 
-                            new GenericMaterialMovementDto(MovementTypes.Entry, mm, r.Next(1,3), r.Next(1,6));
+                            new GenericMaterialMovementDto(MovementTypes.Shipment, mm, r.Next(1,3), r.Next(1,6));
                         temp.Add(( newShip,3));
                 break;
                 default:
@@ -180,11 +181,19 @@ public class WarehouseFactory : IWarehouseFactory
                     break;
                 }
             }
-            catch(InsufficientStockException)
+            catch(AggregateException ex) when (ex.InnerExceptions.Any(e => e is InsufficientStockException))
             {
                 if(Mov.Movement == MovementTypes.Movement) fMov += 1;
                 else if (Mov.Movement == MovementTypes.Shipment) fShip += 1;
+                Log.Warning("Stock insuficiente para realizar la operacion");
             }
+            catch (Exception)
+            {
+                if(Mov.Movement == MovementTypes.Movement) fMov += 1;
+                else if (Mov.Movement == MovementTypes.Shipment) fShip += 1;
+                Log.Error("No se que haces aqui");
+            }
+
         }
 
         return new BurstResult(cEntry, cMov, cShip, fMov, fShip);
