@@ -1,9 +1,13 @@
+using System.Data;
+using System.Text;
 using Library.ControllerApi.Filters;
 using Library.ControllerApi.Mapping;
 using Library.ControllerApi.Middleware;
 using Library.ControllerApi.Services;
 using Library.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +44,28 @@ builder.Services.AddCors( o=> o.AddPolicy(SpaCorsPolicy, p =>
     .AllowAnyHeader()
     .AllowAnyMethod()
 ));
+
+
+// Validation side of JWT. Issuance lives in TokenService
+var jwtKey = builder.Configuration["Jwt:Key"]; // from appsettings.Development.json
+
+// Hardcoding the issuer and audience - these have to match the ones we set on the token
+const string jwtIssuer = "library-fulfillment";
+const string jwtAudinece = "library-fulfillment-clients";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true, ValidIssuer = jwtIssuer,
+        ValidateAudience = true, ValidAudience = jwtAudinece,
+        ValidateIssuerSigningKey = true, IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+        ValidateLifetime = true
+    });
+
+builder.Services.AddAuthorization(); // Goes after authentication
+
+// Token Issuance is a plain injectable service. Its stateless so we can use a singleton
+builder.Services.AddSingleton<ITokenService, TokenService>();
 
 // Adding our HTTP CLIENT
 builder.Services.AddHttpClient<ISupplierClient, SupplierClient>(c =>
@@ -103,6 +129,10 @@ app.Use(async (ctx, next) =>
 app.UseResponseCaching(); // using the response middleware
 
 app.UseCors(SpaCorsPolicy); // Using our CORS policy with the CORS middleware
+
+// Must be in order for Authn/Authz
+app.UseAuthentication(); // read and validate the tokens -> set User
+app.UseAuthorization(); // enforcer the [Authorize] / RequiereAuthorization() decorators on endpoints
 
 app.UseHttpsRedirection();
 
