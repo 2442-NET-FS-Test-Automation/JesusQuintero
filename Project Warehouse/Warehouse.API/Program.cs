@@ -194,10 +194,10 @@ app.MapPost("/Make-Shipment", async (WarehouseDBContext db, ShipMaterialDto mate
 app.MapPost("/Burst/Movements-Priority", async (WarehouseDBContext db, IWarehouseFactory factory, 
                                     IBinInventoryService invService, int numberOfMovements) =>
 {
-    PriorityQueue<GenericMaterialMovementDto, int> myMovements = await factory.GenerateBurst(numberOfMovements);
+    PriorityQueue<GenericMaterialMovementDto, int> myMovements = await factory.GeneratePriorityBurst(numberOfMovements);
     Stopwatch sw = new Stopwatch();
     sw.Start();
-    BurstResult br = await factory.RunSecuentialBurst(db, factory, invService, myMovements);
+    BurstResult br = await factory.RunPriorityBurst(db, factory, invService, myMovements);
     sw.Stop();
     await db.SaveChangesAsync();
     Log.Information("Succesfull Entry: {sEntry}", br.compEntries);
@@ -211,6 +211,33 @@ app.MapPost("/Burst/Movements-Priority", async (WarehouseDBContext db, IWarehous
     oKMessage += $"\nExecution time from burst {sw.ElapsedMilliseconds}";
 
     return Results.Ok(oKMessage);
+});
+
+app.MapPost("/Burst/Benchmark", async (WarehouseDBContext db, IDbContextFactory<WarehouseDBContext> dbFactory, IWarehouseFactory factory, 
+                                    IBinInventoryService invService, int numberOfMovements) =>
+{
+    Stopwatch sequentialSW = new Stopwatch();
+    sequentialSW.Start();
+    List<EntryMaterialDto> sequentialEntries = await factory.GenerateSequentialEntryBurst(numberOfMovements);
+    await factory.RunSequentialBurst(db, factory, sequentialEntries);
+    await db.SaveChangesAsync();
+    sequentialSW.Stop();
+     
+    Stopwatch concurrentSW = new Stopwatch();
+    concurrentSW.Start();
+    
+    List<EntryMaterialDto> concurrentEntries = await factory.GenerateConcurrentEntryBurst(numberOfMovements);
+    await factory.RunConcurrentBurst(factory, invService, concurrentEntries);
+    
+    concurrentSW.Stop();
+    
+    Log.Information("Secuential Execution time:{time}", sequentialSW.ElapsedMilliseconds);
+    Log.Information("Concurrent Execution time:{time}", concurrentSW.ElapsedMilliseconds);
+    string oKMessage = $"Secuential Execution time:{sequentialSW.ElapsedMilliseconds}";
+    oKMessage += $"\nConcurrent Execution time:{concurrentSW.ElapsedMilliseconds}";
+
+    return Results.Ok(oKMessage);
+    
 });
 
 

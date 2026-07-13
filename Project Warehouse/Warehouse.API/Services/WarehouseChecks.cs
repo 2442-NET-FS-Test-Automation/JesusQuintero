@@ -56,10 +56,6 @@ public class BinInventoryService : IBinInventoryService
                                         .Select(g => g.First());
         ConcurrentDictionary<int, LocatedMaterials> toBinDict = new ConcurrentDictionary<int, LocatedMaterials>
                                                             (combinedMaterials.ToDictionary(l=>l.Material_Id));
-        
-
-        
-        
             
         Parallel.ForEach(materials, mat =>
         {
