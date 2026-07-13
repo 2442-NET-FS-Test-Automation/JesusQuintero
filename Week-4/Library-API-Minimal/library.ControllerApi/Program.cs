@@ -31,6 +31,21 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog(); // Telling the builder to use Serilog
 
+// Adding CORS
+const string SpaCorsPolicy = "spa"; // string name for our policy
+
+// Configuring our CORS policy
+builder.Services.AddCors( o=> o.AddPolicy(SpaCorsPolicy, p =>
+    p.WithOrigins("http/localhost:3000")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+));
+
+// Adding our HTTP CLIENT
+builder.Services.AddHttpClient<ISupplierClient, SupplierClient>(c =>
+    c.BaseAddress = new Uri("https://dummyjson.com/") // all calls append to this URL
+);
+
 
 // Add services to the container.
 
@@ -40,6 +55,10 @@ builder.Services.AddOpenApi();
 
 // Adding swagger back
 builder.Services.AddSwaggerGen();
+
+// Adding caching
+builder.Services.AddMemoryCache(); // adding cache-ing to our server
+builder.Services.AddResponseCaching(); // adding response chache-ing - asking the front end to save request results
 
 var app = builder.Build();
 
@@ -80,6 +99,10 @@ app.Use(async (ctx, next) =>
 
     await next(ctx);
 });
+
+app.UseResponseCaching(); // using the response middleware
+
+app.UseCors(SpaCorsPolicy); // Using our CORS policy with the CORS middleware
 
 app.UseHttpsRedirection();
 

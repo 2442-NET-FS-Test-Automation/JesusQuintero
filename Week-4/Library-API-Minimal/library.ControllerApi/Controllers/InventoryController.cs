@@ -3,7 +3,8 @@ using Library.ControllerApi.DTOs;
 using Library.ControllerApi.Services;
 using Library.Data;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc; // ControllerBase lives here
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory; // ControllerBase lives here
 
 [ApiController] // This annotation tells ASP.NET to map this controller during app.MapControllers()
 [Route("api/[controller]")] // Pretty sure this will be localhost:5051/api/Inventory as the routebase
@@ -11,25 +12,50 @@ public class InventoryController : ControllerBase
 {
     // This will be removed tomorrow for sure
     private readonly IInventoryService _service;
-
-
     private readonly IMapper _mapper;
+    // server side cache
+    // One shared instance for the whole app - singleton
+    private readonly IMemoryCache _cache;
+    private readonly ISupplierClient _supplier;
 
-    public InventoryController(IInventoryService service, IMapper mapper)
+    public InventoryController(IInventoryService service, IMapper mapper, IMemoryCache cache, ISupplierClient suppier)
     {
         _service = service;
         _mapper = mapper;
+        _cache = cache;
+        _supplier = suppier;
     }
 
     // Lets write our first GET endpoint
     [HttpGet] // IActionResult just represents possible HTTP response actions
+    [ResponseCache(Duration = 30)] // adding response cahe-ing, now that we've set it up in Program.cs
     public async Task<ActionResult<IEnumerable<InventoryDto>>> Get()
     {
-        var items = await _service.AllAsync();
+        // Lets add server side cache-ing - still straightforward but we have to think a little harder
+        // We have to think about when/where to add the logic to add something to the cache - and also
+        // when to invalidates it
 
-        var mappedItems = _mapper.Map<List<InventoryDto>>(items);
+        // First - check the cache. If it there AND valid, pull from it. Otherwise,
+        // we will add wathever we get dirong this method to the cache
+        var dtos = await _cache.GetOrCreateAsync("inventory:all", async entry =>
+        {
+            // Setting things about our cache entry - like " expire no matter what after 2 minutes"
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2);
 
-        return Ok(mappedItems);
+            // Actually get the items from DB
+            var items = await _service.AllAsync();
+
+            // Return to front end(and also add to cahce, since we're wrapped by _cache.GetOrCreateAsync)
+            return _mapper.Map<List<InventoryDto>>(items);
+        });
+
+        return Ok(dtos);
+
+        // var items = await _service.AllAsync();
+
+        // var mappedItems = _mapper.Map<List<InventoryDto>>(items);
+
+        // return Ok(mappedItems);
         
 
         // // As is this creeates infinite loop when we try to serialize to JSON
@@ -103,6 +129,10 @@ public class InventoryController : ControllerBase
         // Created at needs to know how to find the newly created resouce - so we tell it
         // Use the GetBySku controller method (literally the one above) and use the information
         // in response to build the URI string
+
+        // Invalidating  whatever is in cache - because DB state has changed
+        _cache.Remove("inventory:all");
+
         return CreatedAtAction(nameof(GetBySku), new {sku = response.Sku}, response);
     }
 
@@ -111,8 +141,29 @@ public class InventoryController : ControllerBase
     {
         bool isDeleted = await _service.RemoveAsync(sku);
 
-        if(isDeleted) return NoContent(); // 204 - No content - it Was there, no anymore
+        if (isDeleted)
+        {
+            _cache.Remove("inventpry:all");
+            return NoContent();// 204 - No content - it Was there, no anymore
+        }  
 
         return NotFound(); // 404 - couldn't delete it because sku was wrong
+    }
+
+    // New GET that uses that SupplierClient to call an outside API
+    // localhost:5173/api/Inventory/{sku}/supplier-price
+    [HttpGet("{sku}/supplier-price")]
+    public async Task<IActionResult> GetSupplierPrice(string sku)
+    {
+        // Call our supplier with the httpclient code
+        var price =  await _supplier.GetListPriceAsync(sku);
+
+        if(price is null)
+        {
+            return NotFound(); // not price found
+        }
+
+        // returning an inline object for now, no DTO
+        return Ok(new {sku, supplierPrice = price});
     }
 }
