@@ -20,7 +20,7 @@ public class ExceptionHandlingMiddleware
         _log = log;
     }
 
-    public async Task InvoqueAsync(HttpContext ctx)
+    public async Task InvokeAsync(HttpContext ctx)
     {
         try{ await _next(ctx); }
         catch (Exception ex)

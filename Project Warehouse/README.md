@@ -43,6 +43,9 @@ Enpoint that remove stock from some bin and store the shipment and a related mov
 <h5>- Burst/Movements-Priority</h5>
 Enpoint that generates a given number of movements to be processed, stores it into a PriorityQueue and execute its concurrently depending on the priority that it has. Finally log the number of operation successfull and the failed operations of each type and the time of excecution of the operetions.
 
+<h5>- Burst/Benchmark</h5>
+Enpoint that generates a given number of entrys to be processed in sequential process and parallel process. Finally shows the excecution time of each one. 
+
 
 <h2> Use of Technologies </h2>
 - Use of EF Core model + migrations + seed data against SQL Server in Docker, DbContext in DI.<br>
