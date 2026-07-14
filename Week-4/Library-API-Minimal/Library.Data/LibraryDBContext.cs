@@ -23,6 +23,8 @@ public class LibraryDBContext : DbContext
     public DbSet<OrderLine> OrderLine => Set<OrderLine>();
     public DbSet<FulfillmentEvent> fulfillmentEvents {get; set; }
 
+    public DbSet<User> Users => Set<User>();
+
 
     // If I want to do things like deeper configurations options or data seeding
     // I can override a method we inherited from DBContext
@@ -57,6 +59,10 @@ public class LibraryDBContext : DbContext
         // is unique is specific to strings + SQL Server
         b.Entity<Customer>().Property(c => c.Email).HasMaxLength(256); // Setting length of email first...
         b.Entity<Customer>().HasIndex(c => c.Email).IsUnique();
+
+        // User needs a unique username - best to use Fluent API
+        b.Entity<User>().HasIndex(u => u.UserName).IsUnique();
+        
 
         // After you've configured your entities (if you do any config in the override)
         // we can use OnModelCreating to seed data

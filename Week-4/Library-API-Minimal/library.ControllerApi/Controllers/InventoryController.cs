@@ -155,7 +155,7 @@ public class InventoryController : ControllerBase
     // New GET that uses that SupplierClient to call an outside API
     // localhost:5173/api/Inventory/{sku}/supplier-price
     [HttpGet("{sku}/supplier-price")]
-    [Authorize(Roles = "admin")] // no valid token - returns a 401. No code ever runs. Any role but "admin" = 403
+    [Authorize] // no valid token - returns a 401. No code ever runs. Any role but "admin" = 403
     public async Task<IActionResult> GetSupplierPrice(string sku)
     {
         // Call our supplier with the httpclient code
