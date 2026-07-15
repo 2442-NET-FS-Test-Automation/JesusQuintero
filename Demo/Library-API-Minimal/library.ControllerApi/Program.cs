@@ -43,7 +43,7 @@ const string SpaCorsPolicy = "spa"; // string name for our policy
 
 // Configuring our CORS policy
 builder.Services.AddCors( o=> o.AddPolicy(SpaCorsPolicy, p =>
-    p.WithOrigins("http/localhost:3000")
+    p.WithOrigins("http://127.0.0.1:5500")
     .AllowAnyHeader()
     .AllowAnyMethod()
 ));

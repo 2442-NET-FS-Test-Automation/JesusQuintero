@@ -88,9 +88,9 @@ main{
     gap: 1rem;
 }
 
-.site-nav a{
-    color: color;
-    text-decoration: none; /*gets rid of that underline for liks */
+.site-nav a {   
+    color: white;
+    text-decoration: none; /* gets rid of that underline for liks */
     padding: 0.25rem, 0.5rem;
     border-radius: var(--radius);
 }
@@ -134,7 +134,7 @@ button {
 
 .cards {
     display: grid;
-    /* make as many 14rem columns as fit - more responsive with no media queries */
+    /* make as many 14rem columns as fit - more responsive with no mediaqueries */
     grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
     gap: var(--card-gap);
 }
