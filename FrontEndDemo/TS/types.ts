@@ -1,0 +1,48 @@
+// TS has interfaces as well as classes
+// We will use interfaces A LOT as type contracts
+// for incoming data from our API, mirroring our ASP.NET API's DTOs
+// The main pain point is we need the field names to be 1:1
+
+// Mirror InventoryDTO )GET /api/Inventory=
+export interface InventoryItem {
+    sku: Sku; // we'll change this later ...
+    name: string;
+    currentStock: number;
+}
+
+// Export just lets us import ibti ither TS files later on.
+export interface SuppierPrice {
+    sku: Sku; // this one too
+    supplierPrice: number;
+}
+
+// More TS types
+
+// We can use type aliases to give a custom name to any type
+export type Sku = string; // aliasing strings as Skus
+
+// Union type: a type that awwoes a variable to be one of several types
+// useful for creating custom types to allow for multiple parameter types in a method
+// can also use it like an enum
+export type FetchState = "idle" | "loading" | "loaded" | "failed";
+
+let accountId: string | number; // now this variable can hold either type, a Union
+
+// Enums - lets use a numeruc enum to list out our error codes
+// that we can expect to get back from API
+
+export enum HttpStatus {
+    Ok = 200,
+    Created = 201,
+    NoContent = 204,
+    BadRequest = 400,
+    Unauthorized = 401,
+    Forbidden = 403,
+    NotFound = 404
+}
+
+// String enum - same logic as C# enums, same as the one above
+export enum SortDirection {
+    Ascending = "asc",
+    Descending = "desc"
+}
