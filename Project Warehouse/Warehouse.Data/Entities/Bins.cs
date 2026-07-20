@@ -15,6 +15,6 @@ public class Bins
     [Required]
     public bool RealBin {get; set; } = false;
 
-    
+    public DateOnly CreationDate {get; set; }
     public ICollection<LocatedMaterials> LocatedMaterials { get; set; } = default!;
 }
